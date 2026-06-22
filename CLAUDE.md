@@ -39,6 +39,6 @@ Each worksheet implements its own quiz/interaction system in vanilla JS:
 ## Conventions
 
 - All internal links between worksheets use relative paths
-- No AI tool attribution in commit messages
+- No AI tool attribution in commit messages. Specifically, do NOT add `Co-Authored-By: Claude` (or any AI/assistant) trailers, and do not include "Generated with" lines or similar. Commit messages must contain only the change description.
 - Atomic commits: stage files individually or in small logical groups
 - The `.vibe/` directory contains config for Vibe CLI (a separate tool) and is untracked from the course content perspective
