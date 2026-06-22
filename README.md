@@ -2,6 +2,8 @@
 
 > **Build a Mario-style platformer game with Python and Arcade!**
 
+🌐 **Live course:** [https://jasperf.github.io/tamyrlin/index.html](https://jasperf.github.io/tamyrlin/index.html)
+
 ---
 
 ## 🎮 About This Course
@@ -64,8 +66,9 @@ You should see: `Arcade is ready!`
 
 ### 3. Start the Course
 
-Begin with the first worksheet:
-- **[Arcade Introduction](arcade-intro.html)** - Learn about Arcade, install it, and create your first window
+Open the course online and begin with the first worksheet:
+- **[Course Home](https://jasperf.github.io/tamyrlin/index.html)** - All worksheets in one place
+- **[Arcade Introduction](https://jasperf.github.io/tamyrlin/arcade-intro.html)** - Learn about Arcade, install it, and create your first window
 
 ---
 
