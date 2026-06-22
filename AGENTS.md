@@ -25,7 +25,7 @@ Always follow the rules and conventions in the project's `CLAUDE.md` file. This 
    - All worksheets must be self-contained single HTML files
    - Maintain consistent design system across all worksheets (colors, fonts, spacing)
    - Use the same CSS variable names and Google Fonts imports as existing worksheets
-   - `.vibe/` directories are untracked and should remain so
+   - `.vibe/` directories are untracked except `.vibe/config.toml` which should be tracked
 
 ## Response Guidelines
 - Be concise and technical
