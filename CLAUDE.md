@@ -23,7 +23,7 @@ Every worksheet is a single `.html` file containing all CSS (inline `<style>`) a
 - `arcade-intro.html` — First worksheet: Arcade setup and first window
 - `sprites-graphics.html` — Sprites and image handling
 - `basics/movement-physics.html` — Keyboard input and velocity
-- `platformer/part1-part6` — Sequential platformer build worksheets (parts 7-9 not yet created)
+- `platformer/part1-part9` — Sequential platformer build worksheets (part 9 is the finale; full platformer track complete)
 - `challenges/` — Empty; planned for debugging/tracing/quiz exercises
 
 ### Worksheet interactive patterns

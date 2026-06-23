@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Part 8: Levels &amp; Goals · Platformer Course</title>
+<title>Part 9: Polish · Platformer Course</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Mono:wght@400;500&family=Literata:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -396,7 +396,7 @@ body::before {
   40%, 80% { transform: translateX(6px); }
 }
 
-.level-demo {
+.polish-demo {
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -404,14 +404,14 @@ body::before {
   margin-bottom: 24px;
   text-align: center;
 }
-.level-demo canvas {
+.polish-demo canvas {
   border: 1px solid var(--border);
   border-radius: 7px;
   display: block;
   margin: 12px auto 0;
   cursor: pointer;
 }
-.level-demo .demo-status {
+.polish-demo .demo-status {
   font-family: var(--font-mono);
   font-size: 0.82rem;
   color: var(--text-muted);
@@ -666,6 +666,24 @@ body::before {
 }
 #confetti-canvas.show { opacity: 1; }
 
+/* Course-complete banner */
+.complete-box {
+  background: linear-gradient(135deg, rgba(62,207,142,0.12), rgba(55,118,171,0.12));
+  border: 1px solid var(--accent-sci);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin: 24px 0;
+  text-align: center;
+}
+.complete-box h3 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.complete-box p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 8px; }
+
 /* Responsive */
 @media (max-width: 768px) {
   .hero { padding: 36px 20px 28px; }
@@ -691,7 +709,7 @@ body::before {
 <div class="topbar">
   <div class="topbar-left">
     <div class="logo">Student<span>'s</span> Study Hub</div>
-    <div class="week-badge">Platformer · Part 8: Levels &amp; Goals</div>
+    <div class="week-badge">Platformer · Part 9: Polish</div>
   </div>
   <div style="display:flex;align-items:center;gap:14px;">
     <a href="../index.html" class="back-link">&larr; All sheets</a>
@@ -703,12 +721,12 @@ body::before {
 <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
 
 <div class="hero">
-  <div class="hero-eyebrow">PLATFORMER PROJECT</div>
-  <h1>Part 8: <em>Levels &amp; Goals</em></h1>
-  <p class="hero-sub">Give your game a point. Add a goal flag the player races to reach, detect the win, and store each level as data so you can load a second, a third &mdash; a whole game &mdash; from one tidy method.</p>
+  <div class="hero-eyebrow">PLATFORMER PROJECT &middot; FINALE</div>
+  <h1>Part 9: <em>Polish</em></h1>
+  <p class="hero-sub">The difference between a prototype and a game is the polish. Add background music and sound, animate your sprites so they come alive, and wrap everything in a title screen and game states &mdash; menu, playing, game over.</p>
   <div class="hero-meta">
     <div class="hero-chip"><span class="dot dot-python"></span> Arcade Library</div>
-    <div class="hero-chip">~80 min</div>
+    <div class="hero-chip">~85 min</div>
     <div class="hero-chip">Intermediate</div>
   </div>
 </div>
@@ -723,129 +741,114 @@ body::before {
 
   <section id="concepts">
     <div class="section-header">
-      <div class="section-icon icon-python">&#x1F3C1;</div>
+      <div class="section-icon icon-python">&#x2728;</div>
       <div>
-        <h2>Levels &amp; Goals</h2>
+        <h2>Sound, Animation &amp; States</h2>
         <span class="sub-label">CORE CONCEPTS</span>
       </div>
     </div>
 
     <div class="info-box">
-      <h3>From a Sandbox to a Game</h3>
-      <p>So far your player can run, jump, collect coins, and dodge enemies &mdash; but there's nowhere to <em>go</em>. A game needs a <strong>goal</strong> (something to reach) and a <strong>win condition</strong> (what counts as success). Once one level can be won, the natural next step is having <strong>several</strong> levels.</p>
-      <p><strong>The pattern:</strong></p>
+      <h3>What "Polish" Means</h3>
+      <p>Your game already works &mdash; the player runs, jumps, collects, dodges enemies, and beats levels. <strong>Polish</strong> is everything that makes it <em>feel</em> finished: sound you can hear, sprites that move, and a proper title screen instead of dropping straight into gameplay.</p>
+      <p><strong>Three areas we'll add:</strong></p>
       <ol>
-        <li>Add a <strong>goal sprite</strong> (a flag) at the end of the level</li>
-        <li>Each frame, check whether the player has <strong>reached the goal</strong></li>
-        <li>Store each level's layout as <strong>data</strong> (positions of platforms, coins, enemies, goal)</li>
-        <li>Write one <strong>setup_level()</strong> method that builds a level from that data</li>
-        <li>On reaching the goal, <strong>advance</strong> to the next level &mdash; or win the game</li>
+        <li><strong>Audio</strong> &mdash; looping background music plus the sound effects from Part 6</li>
+        <li><strong>Animation</strong> &mdash; swapping between several textures so the player has a walk cycle</li>
+        <li><strong>Game states</strong> &mdash; a menu, the gameplay, and a game-over/win screen</li>
       </ol>
     </div>
 
     <div class="info-box">
-      <h3>The Goal Sprite</h3>
-      <p>The goal is just a single sprite placed at the end of the level. Because there's only one, you store it on its own (not in a SpriteList):</p>
+      <h3>Background Music</h3>
+      <p>You already used <code>arcade.load_sound()</code> and <code>arcade.play_sound()</code> for coins in Part 6. Music is the same &mdash; just played on a loop at a lower volume so it sits under the action:</p>
       <div class="code-block">
-<span class="code-line"><span class="comment"># In Game.setup_level()</span></span>
-<span class="code-line"><span class="variable">self.goal</span> = <span class="variable">arcade.Sprite</span>(</span>
-<span class="code-line">    <span class="string">"assets/sprites/flag.png"</span>, <span class="number">0.5</span></span>
+<span class="code-line"><span class="comment"># In setup(), load once</span></span>
+<span class="code-line"><span class="variable">self.music</span> = <span class="variable">arcade.load_sound</span>(<span class="string">"assets/sounds/music.mp3"</span>)</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment"># Start it looping, quietly</span></span>
+<span class="code-line"><span class="variable">self.music_player</span> = <span class="variable">arcade.play_sound</span>(</span>
+<span class="code-line">    <span class="variable">self.music</span>, <span class="variable">volume</span>=<span class="number">0.3</span>, <span class="variable">loop</span>=<span class="keyword">True</span></span>
 <span class="code-line">)</span>
-<span class="code-line"><span class="variable">self.goal.center_x</span> = <span class="number">1180</span></span>
-<span class="code-line"><span class="variable">self.goal.center_y</span> = <span class="number">128</span></span>
+      </div>
+      <p><code>play_sound()</code> returns a <strong>player</strong> object. Keep a reference to it (<code>self.music_player</code>) so you can stop it later with <code>self.music_player.pause()</code> or <code>arcade.stop_sound(self.music_player)</code>.</p>
+    </div>
+
+    <div class="info-box">
+      <h3>Animated Sprites: A List of Textures</h3>
+      <p>An animation is just <strong>several images shown in sequence</strong>. Load the frames into a list, then swap the sprite's <code>texture</code> to the next one over time:</p>
+      <div class="code-block">
+<span class="code-line"><span class="keyword">class</span> <span class="function">Player</span>(<span class="variable">arcade.Sprite</span>):</span>
+<span class="code-line">    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="variable">self</span>):</span>
+<span class="code-line">        <span class="keyword">super</span>().<span class="function">__init__</span>()</span>
+<span class="code-line">        <span class="variable">self.walk_textures</span> = [</span>
+<span class="code-line">            <span class="variable">arcade.load_texture</span>(<span class="string">f"assets/player/walk{i}.png"</span>)</span>
+<span class="code-line">            <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="keyword">range</span>(<span class="number">4</span>)</span>
+<span class="code-line">        ]</span>
+<span class="code-line">        <span class="variable">self.cur_frame</span> = <span class="number">0</span></span>
+<span class="code-line">        <span class="variable">self.time_since_change</span> = <span class="number">0</span></span>
+<span class="code-line">        <span class="variable">self.texture</span> = <span class="variable">self.walk_textures</span>[<span class="number">0</span>]</span>
       </div>
     </div>
 
     <div class="info-box">
-      <h3>Detecting the Win</h3>
-      <p>Because the goal is a <em>single</em> sprite, use <code>arcade.check_for_collision()</code> &mdash; the version that compares two sprites &mdash; rather than the <code>..._with_list()</code> version:</p>
+      <h3>Advancing the Animation on a Timer</h3>
+      <p>If you changed the texture <em>every</em> frame, the animation would blur past at 60 fps. Instead, accumulate <code>delta_time</code> and only step forward after a set interval. The <strong>modulo</strong> operator (<code>%</code>) wraps the frame index back to 0:</p>
       <div class="code-block">
-<span class="code-line"><span class="comment"># In Game.on_update()</span></span>
-<span class="code-line"><span class="keyword">if</span> <span class="variable">arcade.check_for_collision</span>(<span class="variable">self.player</span>, <span class="variable">self.goal</span>):</span>
-<span class="code-line">    <span class="variable">self.advance_level</span>()</span>
+<span class="code-line">    <span class="keyword">def</span> <span class="function">update_animation</span>(<span class="variable">self</span>, <span class="variable">delta_time</span>):</span>
+<span class="code-line">        <span class="variable">self.time_since_change</span> += <span class="variable">delta_time</span></span>
+<span class="code-line">        <span class="keyword">if</span> <span class="variable">self.time_since_change</span> > <span class="number">0.1</span>:  <span class="comment"># 10 fps</span></span>
+<span class="code-line">            <span class="variable">self.time_since_change</span> = <span class="number">0</span></span>
+<span class="code-line">            <span class="variable">self.cur_frame</span> = (<span class="variable">self.cur_frame</span> + <span class="number">1</span>) % <span class="keyword">len</span>(<span class="variable">self.walk_textures</span>)</span>
+<span class="code-line">            <span class="variable">self.texture</span> = <span class="variable">self.walk_textures</span>[<span class="variable">self.cur_frame</span>]</span>
       </div>
-      <p><strong>Two collision helpers, two jobs:</strong></p>
-      <ul>
-        <li><code>check_for_collision(a, b)</code> &mdash; one sprite vs <em>one</em> sprite (the goal)</li>
-        <li><code>check_for_collision_with_list(a, lst)</code> &mdash; one sprite vs a <em>whole list</em> (coins, enemies)</li>
-      </ul>
+      <p>Call it each frame from the game's update: <code>self.player.update_animation(delta_time)</code>. Arcade also provides <code>AnimatedWalkingSprite</code> helpers, but rolling your own makes the mechanic clear.</p>
     </div>
 
     <div class="info-box">
-      <h3>Levels as Data</h3>
-      <p>Hard-coding one level inside <code>setup()</code> works for a single screen, but it doesn't scale. Instead, describe each level as a <strong>dictionary</strong> and keep them in a list. Data is easy to add to, tweak, and even load from a file later:</p>
+      <h3>Game States</h3>
+      <p>Right now the game starts the instant you run it. Real games have a <strong>menu</strong> first, then <strong>gameplay</strong>, then a <strong>game-over</strong> screen. The simplest way to manage this is a single state variable that <code>on_update()</code> and <code>on_draw()</code> branch on:</p>
       <div class="code-block">
-<span class="code-line"><span class="variable">LEVELS</span> = [</span>
-<span class="code-line">    {</span>
-<span class="code-line">        <span class="string">"platforms"</span>: [(<span class="number">200</span>, <span class="number">96</span>), (<span class="number">400</span>, <span class="number">160</span>)],</span>
-<span class="code-line">        <span class="string">"coins"</span>:     [(<span class="number">400</span>, <span class="number">200</span>)],</span>
-<span class="code-line">        <span class="string">"enemies"</span>:   [(<span class="number">300</span>, <span class="number">96</span>, <span class="number">250</span>, <span class="number">500</span>)],</span>
-<span class="code-line">        <span class="string">"goal"</span>:      (<span class="number">760</span>, <span class="number">128</span>),</span>
-<span class="code-line">    },</span>
-<span class="code-line">    {</span>
-<span class="code-line">        <span class="string">"platforms"</span>: [(<span class="number">150</span>, <span class="number">140</span>), (<span class="number">500</span>, <span class="number">220</span>)],</span>
-<span class="code-line">        <span class="string">"coins"</span>:     [(<span class="number">150</span>, <span class="number">180</span>), (<span class="number">500</span>, <span class="number">260</span>)],</span>
-<span class="code-line">        <span class="string">"enemies"</span>:   [(<span class="number">350</span>, <span class="number">96</span>, <span class="number">300</span>, <span class="number">600</span>)],</span>
-<span class="code-line">        <span class="string">"goal"</span>:      (<span class="number">900</span>, <span class="number">128</span>),</span>
-<span class="code-line">    },</span>
-<span class="code-line">]</span>
-      </div>
-    </div>
-
-    <div class="info-box">
-      <h3>Building a Level from Data</h3>
-      <p>One method reads a level dictionary and constructs every sprite list from it. The key idea: <strong>rebuild the lists fresh each time</strong> so the previous level's sprites don't linger:</p>
-      <div class="code-block">
-<span class="code-line"><span class="keyword">def</span> <span class="function">setup_level</span>(<span class="variable">self</span>, <span class="variable">level_index</span>):</span>
-<span class="code-line">    <span class="variable">data</span> = <span class="variable">LEVELS</span>[<span class="variable">level_index</span>]</span>
+<span class="code-line"><span class="comment"># State constants</span></span>
+<span class="code-line"><span class="variable">STATE_MENU</span> = <span class="string">"menu"</span></span>
+<span class="code-line"><span class="variable">STATE_PLAYING</span> = <span class="string">"playing"</span></span>
+<span class="code-line"><span class="variable">STATE_GAME_OVER</span> = <span class="string">"game_over"</span></span>
 <span class="code-line"></span>
-<span class="code-line">    <span class="comment"># Fresh lists every time</span></span>
-<span class="code-line">    <span class="variable">self.platform_list</span> = <span class="variable">arcade.SpriteList</span>()</span>
-<span class="code-line">    <span class="variable">self.coin_list</span> = <span class="variable">arcade.SpriteList</span>()</span>
-<span class="code-line">    <span class="variable">self.enemy_list</span> = <span class="variable">arcade.SpriteList</span>()</span>
+<span class="code-line"><span class="comment"># In setup()</span></span>
+<span class="code-line"><span class="variable">self.state</span> = <span class="variable">STATE_MENU</span></span>
 <span class="code-line"></span>
-<span class="code-line">    <span class="keyword">for</span> <span class="variable">x</span>, <span class="variable">y</span> <span class="keyword">in</span> <span class="variable">data</span>[<span class="string">"coins"</span>]:</span>
-<span class="code-line">        <span class="variable">self.coin_list.append</span>(<span class="variable">Coin</span>(<span class="variable">x</span>, <span class="variable">y</span>))</span>
-<span class="code-line"></span>
-<span class="code-line">    <span class="keyword">for</span> <span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">left</span>, <span class="variable">right</span> <span class="keyword">in</span> <span class="variable">data</span>[<span class="string">"enemies"</span>]:</span>
-<span class="code-line">        <span class="variable">self.enemy_list.append</span>(<span class="variable">Enemy</span>(<span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">left</span>, <span class="variable">right</span>))</span>
-<span class="code-line"></span>
-<span class="code-line">    <span class="variable">gx</span>, <span class="variable">gy</span> = <span class="variable">data</span>[<span class="string">"goal"</span>]</span>
-<span class="code-line">    <span class="variable">self.goal</span> = <span class="variable">arcade.Sprite</span>(<span class="string">"assets/sprites/flag.png"</span>, <span class="number">0.5</span>)</span>
-<span class="code-line">    <span class="variable">self.goal.center_x</span> = <span class="variable">gx</span></span>
-<span class="code-line">    <span class="variable">self.goal.center_y</span> = <span class="variable">gy</span></span>
-<span class="code-line"></span>
-<span class="code-line">    <span class="comment"># Move the player back to the start</span></span>
-<span class="code-line">    <span class="variable">self.player.center_x</span> = <span class="variable">START_X</span></span>
-<span class="code-line">    <span class="variable">self.player.center_y</span> = <span class="variable">START_Y</span></span>
+<span class="code-line"><span class="keyword">def</span> <span class="function">on_update</span>(<span class="variable">self</span>, <span class="variable">delta_time</span>):</span>
+<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.state</span> != <span class="variable">STATE_PLAYING</span>:</span>
+<span class="code-line">        <span class="keyword">return</span>  <span class="comment"># freeze the world on menu / game over</span></span>
+<span class="code-line">    <span class="comment"># ... movement, enemies, coins, goal ...</span></span>
       </div>
     </div>
 
     <div class="info-box">
-      <h3>Advancing &amp; Winning</h3>
-      <p>Keep an index of the current level. When the player reaches the goal, move to the next one &mdash; unless that was the last level, in which case the whole game is won:</p>
+      <h3>Switching States with Input</h3>
+      <p>Key presses move the player <em>between</em> states. From the menu, a key starts the game; from game over, a key restarts it:</p>
       <div class="code-block">
-<span class="code-line"><span class="keyword">def</span> <span class="function">advance_level</span>(<span class="variable">self</span>):</span>
-<span class="code-line">    <span class="variable">self.current_level</span> += <span class="number">1</span></span>
-<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.current_level</span> >= <span class="keyword">len</span>(<span class="variable">LEVELS</span>):</span>
-<span class="code-line">        <span class="variable">self.game_won</span> = <span class="keyword">True</span></span>
-<span class="code-line">    <span class="keyword">else</span>:</span>
-<span class="code-line">        <span class="variable">self.setup_level</span>(<span class="variable">self.current_level</span>)</span>
+<span class="code-line"><span class="keyword">def</span> <span class="function">on_key_press</span>(<span class="variable">self</span>, <span class="variable">key</span>, <span class="variable">modifiers</span>):</span>
+<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.state</span> == <span class="variable">STATE_MENU</span>:</span>
+<span class="code-line">        <span class="keyword">if</span> <span class="variable">key</span> == <span class="variable">arcade.key.SPACE</span>:</span>
+<span class="code-line">            <span class="variable">self.state</span> = <span class="variable">STATE_PLAYING</span></span>
+<span class="code-line">    <span class="keyword">elif</span> <span class="variable">self.state</span> == <span class="variable">STATE_GAME_OVER</span>:</span>
+<span class="code-line">        <span class="keyword">if</span> <span class="variable">key</span> == <span class="variable">arcade.key.SPACE</span>:</span>
+<span class="code-line">            <span class="variable">self.setup</span>()  <span class="comment"># restart from scratch</span></span>
       </div>
-      <p>Notice <code>current_level &gt;= len(LEVELS)</code> rather than <code>==</code>. Using <code>&gt;=</code> is a safe habit &mdash; it still catches the end even if the index ever overshoots.</p>
     </div>
 
     <div class="warning-box">
       <span class="warn-icon">&#9888;&#65039;</span>
-      <p><strong>Common Pitfall:</strong> If <code>setup_level()</code> <em>appends</em> to the existing lists instead of creating fresh <code>SpriteList()</code> objects, every level keeps the previous level's platforms, coins, and enemies. The screen fills up with leftovers. Always start each level with new, empty lists.</p>
+      <p><strong>Common Pitfall:</strong> Calling <code>arcade.play_sound()</code> for music inside <code>on_update()</code> starts a <em>new</em> overlapping track 60 times a second &mdash; a wall of noise. Start music <strong>once</strong> (in <code>setup()</code> or when entering the playing state), and keep the returned player to control it.</p>
     </div>
 
-    <!-- Interactive Level/Goal Demo -->
-    <div class="level-demo" id="level-demo">
-      <h3 style="font-family: var(--font-display); font-size: 1rem; font-weight: 600; margin-bottom: 4px;">Interactive: Reach the Flag</h3>
-      <p style="font-size: 0.88rem; color: var(--text-muted);">Use arrow keys (or click/tap) to move. Reach the <span style="color:#3ecf8e;">green flag</span> to clear the level &mdash; there are two!</p>
-      <canvas id="level-demo-canvas" width="600" height="300"></canvas>
-      <div class="demo-status" id="level-demo-status">Level 1 of 2 &mdash; Reach the flag! Use arrow keys or click to move</div>
+    <!-- Interactive Polish Demo -->
+    <div class="polish-demo" id="polish-demo">
+      <h3 style="font-family: var(--font-display); font-size: 1rem; font-weight: 600; margin-bottom: 4px;">Interactive: States &amp; Animation</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted);">Press <strong>Space</strong> (or click) to start. Move with the arrow keys &mdash; watch the walk-cycle frame advance on a timer. Reach the flag to win.</p>
+      <canvas id="polish-demo-canvas" width="600" height="300"></canvas>
+      <div class="demo-status" id="polish-demo-status">MENU &mdash; Press Space or click to start</div>
     </div>
 
   </section>
@@ -859,12 +862,12 @@ body::before {
       </div>
     </div>
 
-    <!-- Q1: goal collision function -->
+    <!-- Q1: looping music -->
     <div class="q-card" id="qcard-q1">
       <div class="q-header">
         <div class="q-num" data-num="Q1"></div>
         <div class="q-header-text">
-          <div class="q-text">The goal is a single sprite. Which function checks whether the player has reached it?</div>
+          <div class="q-text">How do you start background music so it repeats continuously?</div>
           <div class="q-marks">1 mark</div>
         </div>
       </div>
@@ -872,36 +875,36 @@ body::before {
         <div class="mcq-options" id="q1-opts">
           <div class="mcq-opt" onclick="selectMCQ('q1', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) <code>arcade.check_for_collision_with_list(self.player, self.goal)</code></span>
+            <span>A) <code>arcade.play_sound(self.music, loop=True)</code></span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q1', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) <code>arcade.check_for_collision(self.player, self.goal)</code></span>
+            <span>B) <code>arcade.load_sound(self.music, repeat=True)</code></span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q1', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) <code>self.goal.reached(self.player)</code></span>
+            <span>C) Call <code>arcade.play_sound(self.music)</code> again every frame</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q1', this, 'd')">
             <div class="opt-indicator"></div>
-            <span>D) <code>arcade.win(self.player, self.goal)</code></span>
+            <span>D) <code>self.music.forever()</code></span>
           </div>
         </div>
         <div class="q-actions">
-          <button class="btn btn-check" onclick="checkMCQ('q1','b','Q1')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q1','Use the list version only when the second argument is a SpriteList. The goal is one sprite.')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q1','arcade.check_for_collision(self.player, self.goal) &mdash; for one sprite versus one sprite')">Show Answer</button>
+          <button class="btn btn-check" onclick="checkMCQ('q1','a','Q1')">Check Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q1','Looping is an argument to play_sound, not load_sound. And you only call it once.')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q1','arcade.play_sound(self.music, loop=True) &mdash; called once, with loop enabled')">Show Answer</button>
         </div>
         <div class="feedback" id="q1-fb"></div>
       </div>
     </div>
 
-    <!-- Q2: why data -->
+    <!-- Q2: what is an animated sprite -->
     <div class="q-card" id="qcard-q2">
       <div class="q-header">
         <div class="q-num" data-num="Q2"></div>
         <div class="q-header-text">
-          <div class="q-text">Why store each level's layout as data (a dictionary in a list) rather than hard-coding it in <code>setup()</code>?</div>
+          <div class="q-text">What makes a sprite look animated?</div>
           <div class="q-marks">1 mark</div>
         </div>
       </div>
@@ -909,36 +912,36 @@ body::before {
         <div class="mcq-options" id="q2-opts">
           <div class="mcq-opt" onclick="selectMCQ('q2', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) Data is the only thing Arcade can draw</span>
+            <span>A) Increasing its <code>scale</code> every frame</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q2', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) One <code>setup_level()</code> method can build any level from its data, so adding levels means adding data &mdash; not more code</span>
+            <span>B) Swapping its <code>texture</code> between several images over time</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q2', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) Dictionaries make the game run faster</span>
+            <span>C) Calling <code>draw()</code> twice per frame</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q2', this, 'd')">
             <div class="opt-indicator"></div>
-            <span>D) You cannot create sprites inside <code>setup()</code></span>
+            <span>D) Setting <code>change_x</code> to a large value</span>
           </div>
         </div>
         <div class="q-actions">
           <button class="btn btn-check" onclick="checkMCQ('q2','b','Q2')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q2','Think about what changes when you want a 5th level: more data, or more code?')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q2','Separating data from logic lets one method build any level &mdash; new levels are just new data entries')">Show Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q2','Think of a flip-book: a sequence of slightly different pictures.')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q2','Swapping the texture between several images over time &mdash; like a flip-book')">Show Answer</button>
         </div>
         <div class="feedback" id="q2-fb"></div>
       </div>
     </div>
 
-    <!-- Q3: fresh lists -->
+    <!-- Q3: why game states -->
     <div class="q-card" id="qcard-q3">
       <div class="q-header">
         <div class="q-num" data-num="Q3"></div>
         <div class="q-header-text">
-          <div class="q-text">Why does <code>setup_level()</code> create brand-new <code>SpriteList()</code> objects each time it runs?</div>
+          <div class="q-text">Why keep a <code>self.state</code> variable (menu / playing / game over)?</div>
           <div class="q-marks">1 mark</div>
         </div>
       </div>
@@ -946,60 +949,55 @@ body::before {
         <div class="mcq-options" id="q3-opts">
           <div class="mcq-opt" onclick="selectMCQ('q3', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) So the previous level's sprites are cleared instead of piling up</span>
+            <span>A) So <code>on_update()</code> and <code>on_draw()</code> can behave differently depending on what screen the player is on</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q3', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) Because SpriteLists can only be used once</span>
+            <span>B) Because Arcade requires a variable called <code>state</code></span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q3', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) To make the player jump higher</span>
+            <span>C) To make sprites load faster</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q3', this, 'd')">
             <div class="opt-indicator"></div>
-            <span>D) Arcade deletes lists automatically between frames</span>
+            <span>D) It replaces the need for <code>on_update()</code></span>
           </div>
         </div>
         <div class="q-actions">
           <button class="btn btn-check" onclick="checkMCQ('q3','a','Q3')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q3','What would the screen look like if level 2 kept all of level 1 sprites too?')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q3','Fresh lists clear the old level. Re-using the same lists would leave the previous platforms, coins, and enemies on screen.')">Show Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q3','The menu should not run gameplay physics. How does the code know which to run?')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q3','The state lets update/draw branch &mdash; show a menu, run gameplay, or show game over &mdash; instead of always doing the same thing')">Show Answer</button>
         </div>
         <div class="feedback" id="q3-fb"></div>
       </div>
     </div>
 
-    <!-- Q4: code trace advance_level -->
+    <!-- Q4: modulo trace -->
     <div class="q-card" id="qcard-q4">
       <div class="q-header">
         <div class="q-num" data-num="Q4"></div>
         <div class="q-header-text">
-          <div class="q-text">There are 3 levels (<code>len(LEVELS) == 3</code>). The player is on the last level, so <code>self.current_level</code> is <code>2</code>. They reach the goal and <code>advance_level()</code> runs. What happens?</div>
+          <div class="q-text">There are 4 walk textures. <code>self.cur_frame</code> is currently <code>3</code>. The timer fires and this line runs. What is <code>cur_frame</code> afterwards?</div>
           <div class="q-marks">2 marks</div>
         </div>
       </div>
       <div class="q-body">
         <div class="code-block">
-<span class="code-line"><span class="keyword">def</span> <span class="function">advance_level</span>(<span class="variable">self</span>):</span>
-<span class="code-line">    <span class="variable">self.current_level</span> += <span class="number">1</span></span>
-<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.current_level</span> >= <span class="keyword">len</span>(<span class="variable">LEVELS</span>):</span>
-<span class="code-line">        <span class="variable">self.game_won</span> = <span class="keyword">True</span></span>
-<span class="code-line">    <span class="keyword">else</span>:</span>
-<span class="code-line">        <span class="variable">self.setup_level</span>(<span class="variable">self.current_level</span>)</span>
+<span class="code-line"><span class="variable">self.cur_frame</span> = (<span class="variable">self.cur_frame</span> + <span class="number">1</span>) % <span class="keyword">len</span>(<span class="variable">self.walk_textures</span>)</span>
         </div>
         <div class="mcq-options" id="q4-opts">
           <div class="mcq-opt" onclick="selectMCQ('q4', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) <code>current_level</code> becomes 3, <code>3 &gt;= 3</code> is True, so <code>game_won</code> is set to True</span>
+            <span>A) 4</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q4', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) <code>setup_level(3)</code> runs and loads a fourth level</span>
+            <span>B) 0</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q4', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) Nothing happens because 2 is already the last index</span>
+            <span>C) 3</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q4', this, 'd')">
             <div class="opt-indicator"></div>
@@ -1007,64 +1005,62 @@ body::before {
           </div>
         </div>
         <div class="q-actions">
-          <button class="btn btn-check" onclick="checkMCQ('q4','a','Q4')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q4','First the index increments to 3. Then compare 3 to len(LEVELS), which is 3.')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q4','current_level becomes 3; 3 &gt;= 3 is True, so game_won = True. The &gt;= check prevents trying to load a non-existent LEVELS[3].')">Show Answer</button>
+          <button class="btn btn-check" onclick="checkMCQ('q4','b','Q4')">Check Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q4','(3 + 1) is 4. Now 4 % 4 = ? The modulo wraps it back around.')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q4','0 &mdash; (3 + 1) % 4 = 4 % 4 = 0, wrapping back to the first frame. That is exactly why modulo is used instead of plain addition.')">Show Answer</button>
         </div>
         <div class="feedback" id="q4-fb"></div>
       </div>
     </div>
 
-    <!-- Q5: debug leftover sprites -->
+    <!-- Q5: debug animation too fast -->
     <div class="q-card" id="qcard-q5">
       <div class="q-header">
         <div class="q-num" data-num="Q5"></div>
         <div class="q-header-text">
-          <div class="q-text">Debug: After beating level 1, level 2 shows <em>all</em> of level 1's coins and enemies as well as level 2's. Which fix is correct?</div>
+          <div class="q-text">Debug: This walk animation flickers far too fast &mdash; the textures blur together. What is the fix?</div>
           <div class="q-marks">2 marks</div>
         </div>
       </div>
       <div class="q-body">
         <div class="code-block">
-<span class="code-line"><span class="keyword">def</span> <span class="function">setup_level</span>(<span class="variable">self</span>, <span class="variable">level_index</span>):</span>
-<span class="code-line">    <span class="variable">data</span> = <span class="variable">LEVELS</span>[<span class="variable">level_index</span>]</span>
-<span class="code-line">    <span class="comment"># lists were created once in setup(), reused here</span></span>
-<span class="code-line">    <span class="keyword">for</span> <span class="variable">x</span>, <span class="variable">y</span> <span class="keyword">in</span> <span class="variable">data</span>[<span class="string">"coins"</span>]:</span>
-<span class="code-line">        <span class="variable">self.coin_list.append</span>(<span class="variable">Coin</span>(<span class="variable">x</span>, <span class="variable">y</span>))</span>
+<span class="code-line"><span class="keyword">def</span> <span class="function">update_animation</span>(<span class="variable">self</span>, <span class="variable">delta_time</span>):</span>
+<span class="code-line">    <span class="variable">self.cur_frame</span> = (<span class="variable">self.cur_frame</span> + <span class="number">1</span>) % <span class="number">4</span></span>
+<span class="code-line">    <span class="variable">self.texture</span> = <span class="variable">self.walk_textures</span>[<span class="variable">self.cur_frame</span>]</span>
         </div>
         <div class="mcq-options" id="q5-opts">
           <div class="mcq-opt" onclick="selectMCQ('q5', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) Re-create the lists at the top of <code>setup_level()</code>: <code>self.coin_list = arcade.SpriteList()</code> (and the same for enemies/platforms)</span>
+            <span>A) Only advance the frame after enough time has passed, e.g. accumulate <code>delta_time</code> and step when it exceeds <code>0.1</code></span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q5', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) Increase <code>COIN_SCALE</code> so the old coins are hidden</span>
+            <span>B) Load more textures</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q5', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) Call <code>setup_level()</code> twice</span>
+            <span>C) Remove the modulo operator</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q5', this, 'd')">
             <div class="opt-indicator"></div>
-            <span>D) Move the goal further to the right</span>
+            <span>D) Call <code>update_animation()</code> less often by skipping <code>on_update()</code></span>
           </div>
         </div>
         <div class="q-actions">
           <button class="btn btn-check" onclick="checkMCQ('q5','a','Q5')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q5','The leftovers are still in the same lists. You need empty lists before appending the new level.')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q5','Re-create each SpriteList at the start of setup_level() so it begins empty &mdash; or call .clear() on each list before appending')">Show Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q5','The code steps the frame on EVERY call (60x/sec). It needs a timer gate.')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q5','Gate the frame change behind a timer: add delta_time to an accumulator and only advance when it passes a threshold like 0.1s, then reset it')">Show Answer</button>
         </div>
         <div class="feedback" id="q5-fb"></div>
       </div>
     </div>
 
-    <!-- Q6: which collision helper -->
+    <!-- Q6: where to call update_animation -->
     <div class="q-card" id="qcard-q6">
       <div class="q-header">
         <div class="q-num" data-num="Q6"></div>
         <div class="q-header-text">
-          <div class="q-text">You want to check the player against the <em>coin list</em> (many coins). Which helper is correct?</div>
+          <div class="q-text">Where should <code>self.player.update_animation(delta_time)</code> be called?</div>
           <div class="q-marks">1 mark</div>
         </div>
       </div>
@@ -1072,36 +1068,36 @@ body::before {
         <div class="mcq-options" id="q6-opts">
           <div class="mcq-opt" onclick="selectMCQ('q6', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) <code>arcade.check_for_collision(self.player, self.coin_list)</code></span>
+            <span>A) In <code>on_draw()</code>, since animation is visual</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q6', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) <code>arcade.check_for_collision_with_list(self.player, self.coin_list)</code></span>
+            <span>B) In <code>on_update(delta_time)</code>, which receives <code>delta_time</code> and runs every frame</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q6', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) Either one works the same way</span>
+            <span>C) In <code>setup()</code>, once</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q6', this, 'd')">
             <div class="opt-indicator"></div>
-            <span>D) <code>self.coin_list.check(self.player)</code></span>
+            <span>D) In <code>__init__()</code> of the Game class</span>
           </div>
         </div>
         <div class="q-actions">
           <button class="btn btn-check" onclick="checkMCQ('q6','b','Q6')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q6','The second argument is a list, so you need the ..._with_list version.')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q6','check_for_collision_with_list() &mdash; use it whenever the second argument is a SpriteList; check_for_collision() is for a single sprite')">Show Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q6','update_animation needs delta_time, and the timing must update continuously. Which method gets delta_time each frame?')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q6','In on_update(delta_time) &mdash; it runs every frame and provides the delta_time the animation timer needs')">Show Answer</button>
         </div>
         <div class="feedback" id="q6-fb"></div>
       </div>
     </div>
 
-    <!-- Q7: why reload vs move player -->
+    <!-- Q7: freeze world in menu -->
     <div class="q-card" id="qcard-q7">
       <div class="q-header">
         <div class="q-num" data-num="Q7"></div>
         <div class="q-header-text">
-          <div class="q-text">When advancing to the next level, why call <code>setup_level(self.current_level)</code> instead of just moving the player back to the start?</div>
+          <div class="q-text">In <code>on_update()</code>, why <code>return</code> early when <code>self.state</code> is not <code>STATE_PLAYING</code>?</div>
           <div class="q-marks">2 marks</div>
         </div>
       </div>
@@ -1109,25 +1105,25 @@ body::before {
         <div class="mcq-options" id="q7-opts">
           <div class="mcq-opt" onclick="selectMCQ('q7', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) Moving the player is illegal in Arcade</span>
+            <span>A) To skip gameplay logic on the menu / game-over screens so the world stays frozen until play begins</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q7', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) The next level has a different layout &mdash; new platforms, coins, enemies, and goal must be built from that level's data</span>
+            <span>B) Because <code>on_update()</code> can only run once</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q7', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) <code>setup_level()</code> is faster than setting <code>center_x</code></span>
+            <span>C) To stop the music from playing</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q7', this, 'd')">
             <div class="opt-indicator"></div>
-            <span>D) The player sprite must be recreated every level</span>
+            <span>D) Returning early makes the player move faster</span>
           </div>
         </div>
         <div class="q-actions">
-          <button class="btn btn-check" onclick="checkMCQ('q7','b','Q7')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q7','Moving the player only repositions one sprite. What about all the OTHER sprites the new level needs?')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q7','Each level has its own platforms, coins, enemies, and goal. setup_level() rebuilds them all from the level data; just moving the player would leave the old level in place.')">Show Answer</button>
+          <button class="btn btn-check" onclick="checkMCQ('q7','a','Q7')">Check Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q7','Should enemies patrol and gravity pull the player while the title screen is showing?')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q7','So gameplay (movement, gravity, enemies) does not run on the menu or game-over screen &mdash; the world is paused until the state is PLAYING')">Show Answer</button>
         </div>
         <div class="feedback" id="q7-fb"></div>
       </div>
@@ -1140,124 +1136,99 @@ body::before {
       <div class="section-icon icon-python">&#128187;</div>
       <div>
         <h2>Project Task</h2>
-        <span class="sub-label">BUILD YOUR GAME</span>
+        <span class="sub-label">FINISH YOUR GAME</span>
       </div>
     </div>
 
     <div class="info-box">
-      <h3>Add a Goal and a Second Level</h3>
-      <p>Turn your sandbox into a real game: add a goal flag, detect the win, and load levels from a data list. Build on the game you made in Part 7.</p>
+      <h3>Polish Your Platformer</h3>
+      <p>This is the finishing pass. Add music, animate the player, and wrap the game in a menu and game-over screen. Build on the game you made in Part 8.</p>
     </div>
 
     <div class="info-box">
-      <h3>Step 1: Describe Your Levels as Data</h3>
-      <p>Near the top of <code>game.py</code>, define a list of level dictionaries. Start with two:</p>
+      <h3>Step 1: Add Game States</h3>
+      <p>Define state constants and start in the menu. Branch your update and draw on the state:</p>
       <div class="code-block">
-<span class="code-line"><span class="variable">START_X</span>, <span class="variable">START_Y</span> = <span class="number">64</span>, <span class="number">128</span></span>
+<span class="code-line"><span class="variable">STATE_MENU</span> = <span class="string">"menu"</span></span>
+<span class="code-line"><span class="variable">STATE_PLAYING</span> = <span class="string">"playing"</span></span>
+<span class="code-line"><span class="variable">STATE_GAME_OVER</span> = <span class="string">"game_over"</span></span>
 <span class="code-line"></span>
-<span class="code-line"><span class="variable">LEVELS</span> = [</span>
-<span class="code-line">    {</span>
-<span class="code-line">        <span class="string">"coins"</span>:   [(<span class="number">200</span>, <span class="number">150</span>), (<span class="number">400</span>, <span class="number">200</span>)],</span>
-<span class="code-line">        <span class="string">"enemies"</span>: [(<span class="number">300</span>, <span class="number">96</span>, <span class="number">250</span>, <span class="number">500</span>)],</span>
-<span class="code-line">        <span class="string">"goal"</span>:    (<span class="number">760</span>, <span class="number">128</span>),</span>
-<span class="code-line">    },</span>
-<span class="code-line">    {</span>
-<span class="code-line">        <span class="string">"coins"</span>:   [(<span class="number">150</span>, <span class="number">180</span>), (<span class="number">500</span>, <span class="number">260</span>)],</span>
-<span class="code-line">        <span class="string">"enemies"</span>: [(<span class="number">350</span>, <span class="number">96</span>, <span class="number">300</span>, <span class="number">600</span>),</span>
-<span class="code-line">                    (<span class="number">600</span>, <span class="number">96</span>, <span class="number">550</span>, <span class="number">760</span>)],</span>
-<span class="code-line">        <span class="string">"goal"</span>:    (<span class="number">880</span>, <span class="number">128</span>),</span>
-<span class="code-line">    },</span>
-<span class="code-line">]</span>
-      </div>
-      <p><strong>Tip:</strong> Keep your platforms either in this data too, or in a shared ground layout &mdash; whichever you prefer. The important part is that coins, enemies, and the goal come from the level's data.</p>
-    </div>
-
-    <div class="info-box">
-      <h3>Step 2: Write setup_level()</h3>
-      <p>Replace the level-specific parts of your old <code>setup()</code> with a method that builds a level from its data &mdash; with <strong>fresh lists</strong> each time:</p>
-      <div class="code-block">
-<span class="code-line"><span class="keyword">def</span> <span class="function">setup_level</span>(<span class="variable">self</span>, <span class="variable">level_index</span>):</span>
-<span class="code-line">    <span class="variable">data</span> = <span class="variable">LEVELS</span>[<span class="variable">level_index</span>]</span>
-<span class="code-line">    </span>
-<span class="code-line">    <span class="variable">self.coin_list</span> = <span class="variable">arcade.SpriteList</span>()</span>
-<span class="code-line">    <span class="variable">self.enemy_list</span> = <span class="variable">arcade.SpriteList</span>()</span>
-<span class="code-line">    </span>
-<span class="code-line">    <span class="keyword">for</span> <span class="variable">x</span>, <span class="variable">y</span> <span class="keyword">in</span> <span class="variable">data</span>[<span class="string">"coins"</span>]:</span>
-<span class="code-line">        <span class="variable">self.coin_list.append</span>(<span class="variable">Coin</span>(<span class="variable">x</span>, <span class="variable">y</span>))</span>
-<span class="code-line">    <span class="keyword">for</span> <span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">left</span>, <span class="variable">right</span> <span class="keyword">in</span> <span class="variable">data</span>[<span class="string">"enemies"</span>]:</span>
-<span class="code-line">        <span class="variable">self.enemy_list.append</span>(<span class="variable">Enemy</span>(<span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">left</span>, <span class="variable">right</span>))</span>
-<span class="code-line">    </span>
-<span class="code-line">    <span class="variable">gx</span>, <span class="variable">gy</span> = <span class="variable">data</span>[<span class="string">"goal"</span>]</span>
-<span class="code-line">    <span class="variable">self.goal</span> = <span class="variable">arcade.Sprite</span>(<span class="string">"assets/sprites/flag.png"</span>, <span class="number">0.5</span>)</span>
-<span class="code-line">    <span class="variable">self.goal.center_x</span> = <span class="variable">gx</span></span>
-<span class="code-line">    <span class="variable">self.goal.center_y</span> = <span class="variable">gy</span></span>
-<span class="code-line">    </span>
-<span class="code-line">    <span class="variable">self.player.center_x</span> = <span class="variable">START_X</span></span>
-<span class="code-line">    <span class="variable">self.player.center_y</span> = <span class="variable">START_Y</span></span>
-      </div>
-    </div>
-
-    <div class="info-box">
-      <h3>Step 3: Track State &amp; Kick Off Level 1</h3>
-      <p>In <code>setup()</code>, create the player once, then load the first level:</p>
-      <div class="code-block">
 <span class="code-line"><span class="keyword">def</span> <span class="function">setup</span>(<span class="variable">self</span>):</span>
-<span class="code-line">    <span class="comment"># Player, score, lives, platforms created here (once)</span></span>
-<span class="code-line">    <span class="comment"># ... existing setup code ...</span></span>
-<span class="code-line">    </span>
-<span class="code-line">    <span class="variable">self.current_level</span> = <span class="number">0</span></span>
-<span class="code-line">    <span class="variable">self.game_won</span> = <span class="keyword">False</span></span>
-<span class="code-line">    <span class="variable">self.setup_level</span>(<span class="variable">self.current_level</span>)</span>
+<span class="code-line">    <span class="comment"># ... existing setup ...</span></span>
+<span class="code-line">    <span class="variable">self.state</span> = <span class="variable">STATE_MENU</span></span>
       </div>
     </div>
 
     <div class="info-box">
-      <h3>Step 4: Detect the Goal &amp; Advance</h3>
-      <p>In <code>on_update()</code>, after handling movement and enemies, check the goal:</p>
-      <div class="code-block">
-<span class="code-line"><span class="keyword">def</span> <span class="function">on_update</span>(<span class="variable">self</span>, <span class="variable">delta_time</span>):</span>
-<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.game_won</span>:</span>
-<span class="code-line">        <span class="keyword">return</span></span>
-<span class="code-line">    </span>
-<span class="code-line">    <span class="comment"># ... existing movement / coins / enemies ...</span></span>
-<span class="code-line">    </span>
-<span class="code-line">    <span class="keyword">if</span> <span class="variable">arcade.check_for_collision</span>(<span class="variable">self.player</span>, <span class="variable">self.goal</span>):</span>
-<span class="code-line">        <span class="variable">self.advance_level</span>()</span>
-<span class="code-line"></span>
-<span class="code-line"><span class="keyword">def</span> <span class="function">advance_level</span>(<span class="variable">self</span>):</span>
-<span class="code-line">    <span class="variable">self.current_level</span> += <span class="number">1</span></span>
-<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.current_level</span> >= <span class="keyword">len</span>(<span class="variable">LEVELS</span>):</span>
-<span class="code-line">        <span class="variable">self.game_won</span> = <span class="keyword">True</span></span>
-<span class="code-line">    <span class="keyword">else</span>:</span>
-<span class="code-line">        <span class="variable">self.setup_level</span>(<span class="variable">self.current_level</span>)</span>
-      </div>
-    </div>
-
-    <div class="info-box">
-      <h3>Step 5: Draw the Goal, Level Number &amp; Win Screen</h3>
-      <p>Draw the goal with the main camera, and the level number plus any win message with the UI camera:</p>
+      <h3>Step 2: Draw Each Screen</h3>
+      <p>In <code>on_draw()</code>, show the right thing for the current state:</p>
       <div class="code-block">
 <span class="code-line"><span class="keyword">def</span> <span class="function">on_draw</span>(<span class="variable">self</span>):</span>
 <span class="code-line">    <span class="variable">self.clear</span>()</span>
-<span class="code-line">    </span>
+<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.state</span> == <span class="variable">STATE_MENU</span>:</span>
+<span class="code-line">        <span class="variable">arcade.draw_text</span>(<span class="string">"MY PLATFORMER"</span>,</span>
+<span class="code-line">            <span class="variable">self.width</span>/<span class="number">2</span>, <span class="variable">self.height</span>/<span class="number">2</span>+<span class="number">20</span>,</span>
+<span class="code-line">            <span class="variable">arcade.color.WHITE</span>, <span class="number">40</span>, <span class="variable">anchor_x</span>=<span class="string">"center"</span>)</span>
+<span class="code-line">        <span class="variable">arcade.draw_text</span>(<span class="string">"Press SPACE to play"</span>,</span>
+<span class="code-line">            <span class="variable">self.width</span>/<span class="number">2</span>, <span class="variable">self.height</span>/<span class="number">2</span>-<span class="number">30</span>,</span>
+<span class="code-line">            <span class="variable">arcade.color.GRAY</span>, <span class="number">18</span>, <span class="variable">anchor_x</span>=<span class="string">"center"</span>)</span>
+<span class="code-line">        <span class="keyword">return</span></span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="comment"># STATE_PLAYING / GAME_OVER: draw the world</span></span>
 <span class="code-line">    <span class="variable">self.camera.use</span>()</span>
 <span class="code-line">    <span class="variable">self.platform_list.draw</span>()</span>
-<span class="code-line">    <span class="variable">self.coin_list.draw</span>()</span>
-<span class="code-line">    <span class="variable">self.enemy_list.draw</span>()</span>
-<span class="code-line">    <span class="variable">arcade.draw_sprite</span>(<span class="variable">self.goal</span>)</span>
-<span class="code-line">    <span class="variable">self.player_list.draw</span>()</span>
-<span class="code-line">    </span>
-<span class="code-line">    <span class="variable">self.ui_camera.use</span>()</span>
-<span class="code-line">    <span class="variable">arcade.draw_text</span>(</span>
-<span class="code-line">        <span class="string">f"Level {self.current_level + 1}   Score: {self.score}"</span>,</span>
-<span class="code-line">        <span class="number">10</span>, <span class="variable">self.height</span> - <span class="number">30</span>,</span>
-<span class="code-line">        <span class="variable">arcade.color.WHITE</span>, <span class="number">18</span></span>
+<span class="code-line">    <span class="comment"># ... coins, enemies, goal, player ...</span></span>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3>Step 3: Switch States on Key Press</h3>
+      <p>Use <code>on_key_press()</code> to move between screens:</p>
+      <div class="code-block">
+<span class="code-line"><span class="keyword">def</span> <span class="function">on_key_press</span>(<span class="variable">self</span>, <span class="variable">key</span>, <span class="variable">modifiers</span>):</span>
+<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.state</span> == <span class="variable">STATE_MENU</span> <span class="keyword">and</span> <span class="variable">key</span> == <span class="variable">arcade.key.SPACE</span>:</span>
+<span class="code-line">        <span class="variable">self.state</span> = <span class="variable">STATE_PLAYING</span></span>
+<span class="code-line">        <span class="keyword">return</span></span>
+<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.state</span> == <span class="variable">STATE_GAME_OVER</span> <span class="keyword">and</span> <span class="variable">key</span> == <span class="variable">arcade.key.SPACE</span>:</span>
+<span class="code-line">        <span class="variable">self.setup</span>()</span>
+<span class="code-line">        <span class="keyword">return</span></span>
+<span class="code-line">    <span class="comment"># normal movement keys only matter while playing</span></span>
+<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.state</span> == <span class="variable">STATE_PLAYING</span>:</span>
+<span class="code-line">        <span class="keyword">if</span> <span class="variable">key</span> == <span class="variable">arcade.key.LEFT</span>:</span>
+<span class="code-line">            <span class="variable">self.player.change_x</span> = -<span class="variable">PLAYER_SPEED</span></span>
+<span class="code-line">        <span class="comment"># ... right / jump ...</span></span>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3>Step 4: Animate the Player</h3>
+      <p>Load walk frames in the player, advance them on a timer, and call <code>update_animation()</code> from the game's update (only while playing):</p>
+      <div class="code-block">
+<span class="code-line"><span class="comment"># In Player.update_animation(self, delta_time)</span></span>
+<span class="code-line"><span class="variable">self.time_since_change</span> += <span class="variable">delta_time</span></span>
+<span class="code-line"><span class="keyword">if</span> <span class="variable">self.time_since_change</span> > <span class="number">0.1</span>:</span>
+<span class="code-line">    <span class="variable">self.time_since_change</span> = <span class="number">0</span></span>
+<span class="code-line">    <span class="variable">self.cur_frame</span> = (<span class="variable">self.cur_frame</span> + <span class="number">1</span>) % <span class="keyword">len</span>(<span class="variable">self.walk_textures</span>)</span>
+<span class="code-line">    <span class="variable">self.texture</span> = <span class="variable">self.walk_textures</span>[<span class="variable">self.cur_frame</span>]</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment"># In Game.on_update(), while playing</span></span>
+<span class="code-line"><span class="variable">self.player.update_animation</span>(<span class="variable">delta_time</span>)</span>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3>Step 5: Add Music</h3>
+      <p>Load the music once and start it looping when the game begins:</p>
+      <div class="code-block">
+<span class="code-line"><span class="comment"># In setup()</span></span>
+<span class="code-line"><span class="variable">self.music</span> = <span class="variable">arcade.load_sound</span>(<span class="string">"assets/sounds/music.mp3"</span>)</span>
+<span class="code-line"><span class="variable">self.music_player</span> = <span class="keyword">None</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment"># When entering STATE_PLAYING (e.g. in on_key_press)</span></span>
+<span class="code-line"><span class="keyword">if</span> <span class="variable">self.music_player</span> <span class="keyword">is</span> <span class="keyword">None</span>:</span>
+<span class="code-line">    <span class="variable">self.music_player</span> = <span class="variable">arcade.play_sound</span>(</span>
+<span class="code-line">        <span class="variable">self.music</span>, <span class="variable">volume</span>=<span class="number">0.3</span>, <span class="variable">loop</span>=<span class="keyword">True</span></span>
 <span class="code-line">    )</span>
-<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.game_won</span>:</span>
-<span class="code-line">        <span class="variable">arcade.draw_text</span>(</span>
-<span class="code-line">            <span class="string">"YOU WIN!"</span>, <span class="variable">self.width</span> / <span class="number">2</span>, <span class="variable">self.height</span> / <span class="number">2</span>,</span>
-<span class="code-line">            <span class="variable">arcade.color.GREEN</span>, <span class="number">48</span>, <span class="variable">anchor_x</span>=<span class="string">"center"</span></span>
-<span class="code-line">        )</span>
       </div>
     </div>
 
@@ -1266,39 +1237,44 @@ body::before {
       <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 12px;"><strong>Verify your implementation:</strong></p>
       <div class="checklist-item">
         <input type="checkbox" id="check-1">
-        <label for="check-1"><strong>Goal visible:</strong> A flag appears at the end of the level</label>
+        <label for="check-1"><strong>Menu shows first:</strong> The game opens on a title screen, not straight into play</label>
       </div>
       <div class="checklist-item">
         <input type="checkbox" id="check-2">
-        <label for="check-2"><strong>Win detected:</strong> Touching the flag triggers a level change</label>
+        <label for="check-2"><strong>Start works:</strong> Pressing Space moves from the menu into gameplay</label>
       </div>
       <div class="checklist-item">
         <input type="checkbox" id="check-3">
-        <label for="check-3"><strong>Level 2 loads:</strong> The second level has a different layout from the first</label>
+        <label for="check-3"><strong>World frozen on menu:</strong> Enemies and gravity do not run until play starts</label>
       </div>
       <div class="checklist-item">
         <input type="checkbox" id="check-4">
-        <label for="check-4"><strong>No leftovers:</strong> Level 2 does not show level 1's coins or enemies</label>
+        <label for="check-4"><strong>Player animates:</strong> The player cycles through walk frames while moving</label>
       </div>
       <div class="checklist-item">
         <input type="checkbox" id="check-5">
-        <label for="check-5"><strong>Level number shows:</strong> The HUD displays the current level</label>
+        <label for="check-5"><strong>Animation paced:</strong> Frames change on a timer, not blurring every frame</label>
       </div>
       <div class="checklist-item">
         <input type="checkbox" id="check-6">
-        <label for="check-6"><strong>Win screen:</strong> Beating the last level shows a &ldquo;YOU WIN!&rdquo; message</label>
+        <label for="check-6"><strong>Music loops:</strong> Background music plays once, loops, and doesn't stack</label>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="check-7">
+        <label for="check-7"><strong>Restart works:</strong> The game-over screen lets you restart with Space</label>
       </div>
     </div>
 
     <div class="warning-box">
       <span class="warn-icon">&#9888;&#65039;</span>
-      <p><strong>Want to design levels faster?</strong> Because levels are just data, you can tweak coin and enemy positions without touching any logic. Try adding a third entry to <code>LEVELS</code> &mdash; if your <code>setup_level()</code> is written well, it should work with zero code changes.</p>
+      <p><strong>No art or audio?</strong> You can fake animation by tinting or slightly resizing the sprite each frame, and skip music entirely &mdash; the state machine and timer logic are the real learning goals. Free walk-cycle sprites and music loops are available at <a href="https://kenney.nl/assets" style="color: var(--accent-python);">kenney.nl</a>.</p>
     </div>
 
-    <div class="info-box">
-      <h3>&#128640; Ready for Part 9?</h3>
-      <p>Once you can reach a goal and progress through multiple levels, you're ready for <strong>Part 9: Polish</strong> &mdash; sound, animations, menus, and the finishing touches that make your game feel complete!</p>
-      <p style="margin-top: 10px;"><a href="part9-polish.html" class="btn" style="color: var(--accent-python); border: 1px solid var(--accent-python); background: transparent; padding: 8px 16px; border-radius: 6px;">Go to Part 9 &rarr;</a></p>
+    <div class="complete-box">
+      <h3>&#127881; Course Complete!</h3>
+      <p>You've built a full platformer from an empty window: sprites, movement, physics, a scrolling camera, coins, enemies, levels, and now polish. That's a real game.</p>
+      <p>Keep going: add more levels, a high-score file, power-ups, or a second enemy type. Everything you need is in the parts you've finished.</p>
+      <p style="margin-top: 14px;"><a href="../index.html" class="btn" style="color: var(--accent-python); border: 1px solid var(--accent-python); background: transparent; padding: 8px 16px; border-radius: 6px; text-decoration: none;">&larr; Back to the course hub</a></p>
     </div>
 
   </section>
@@ -1450,7 +1426,7 @@ function showResults(py) {
   if (pct >= 70) launchConfetti();
 
   try {
-    const key = `python-part8-levels-goals-v1`;
+    const key = `python-part9-polish-v1`;
     localStorage.setItem(key, JSON.stringify({
       score: py,
       max: state.maxMarks.py,
@@ -1523,84 +1499,48 @@ window.addEventListener('load', () => {
   });
 });
 
-// ── Interactive Level / Goal Demo ──────────────────────────
+// ── Interactive Polish Demo: states + animation ──────────────
 (function() {
-  const canvas = document.getElementById('level-demo-canvas');
+  const canvas = document.getElementById('polish-demo-canvas');
   const ctx = canvas.getContext('2d');
-  const statusEl = document.getElementById('level-demo-status');
+  const statusEl = document.getElementById('polish-demo-status');
 
   const W = 600, H = 300;
   const GROUND_Y = H - 40;
 
-  // Each level is data: platforms, a goal, and a start position.
-  const LEVELS = [
-    {
-      platforms: [
-        { x: 0, y: GROUND_Y, w: W, h: 40 },
-        { x: 150, y: 210, w: 110, h: 16 },
-        { x: 340, y: 160, w: 120, h: 16 },
-      ],
-      goal: { x: 540, y: GROUND_Y - 46 },
-      start: { x: 30, y: GROUND_Y - 38 },
-    },
-    {
-      platforms: [
-        { x: 0, y: GROUND_Y, w: W, h: 40 },
-        { x: 90, y: 170, w: 110, h: 16 },
-        { x: 270, y: 210, w: 110, h: 16 },
-        { x: 440, y: 150, w: 120, h: 16 },
-      ],
-      goal: { x: 500, y: 150 - 46 },
-      start: { x: 30, y: GROUND_Y - 38 },
-    },
+  const STATE_MENU = 'menu', STATE_PLAYING = 'playing', STATE_WIN = 'win';
+
+  const platforms = [
+    { x: 0, y: GROUND_Y, w: W, h: 40 },
+    { x: 180, y: 200, w: 120, h: 16 },
+    { x: 380, y: 150, w: 120, h: 16 },
   ];
+  const goal = { x: 540, y: GROUND_Y - 46, w: 28, h: 46 };
 
-  const player = { x: 30, y: GROUND_Y - 38, w: 26, h: 38, vx: 0, vy: 0, onGround: true };
-  const GRAVITY = 0.45;
-  const JUMP_VEL = -9;
-  const SPEED = 3;
+  const player = { x: 30, y: GROUND_Y - 38, w: 26, h: 40, vx: 0, vy: 0, onGround: true };
+  const GRAVITY = 0.45, JUMP_VEL = -9, SPEED = 3;
 
-  let platforms = [];
-  let goal = { x: 0, y: 0, w: 28, h: 46 };
-  let currentLevel = 0;
-  let gameWon = false;
-  let banner = 0;        // frames to show "Level Complete!"
+  // Animation: 4 "frames" advanced on a timer (mirrors update_animation)
+  const FRAME_COUNT = 4;
+  let curFrame = 0;
+  let frameTimer = 0;       // accumulates frames-of-time
+  const FRAME_INTERVAL = 8; // advance every 8 rendered frames (~0.13s)
+
+  let gameState = STATE_MENU;
   const keys = {};
 
-  // setup_level: build the level from its data (fresh each time)
-  function setupLevel(index) {
-    const data = LEVELS[index];
-    platforms = data.platforms.map(p => ({ ...p }));
-    goal = { x: data.goal.x, y: data.goal.y, w: 28, h: 46 };
-    player.x = data.start.x;
-    player.y = data.start.y;
+  function resetPlay() {
+    player.x = 30;
+    player.y = GROUND_Y - 38;
     player.vx = 0;
     player.vy = 0;
     player.onGround = true;
+    curFrame = 0;
+    frameTimer = 0;
   }
-
-  function resetGame() {
-    currentLevel = 0;
-    gameWon = false;
-    banner = 0;
-    setupLevel(currentLevel);
-  }
-
-  function advanceLevel() {
-    currentLevel += 1;
-    if (currentLevel >= LEVELS.length) {
-      gameWon = true;
-    } else {
-      banner = 70;
-      setupLevel(currentLevel);
-    }
-  }
-
-  resetGame();
 
   function update() {
-    if (gameWon) return;
-    if (banner > 0) banner--;
+    if (gameState !== STATE_PLAYING) return;  // world frozen off-state
 
     if (keys['ArrowLeft'] || keys['a']) player.vx = -SPEED;
     else if (keys['ArrowRight'] || keys['d']) player.vx = SPEED;
@@ -1627,28 +1567,35 @@ window.addEventListener('load', () => {
       }
     }
 
-    // Screen bounds
     if (player.x < 0) player.x = 0;
     if (player.x + player.w > W) player.x = W - player.w;
-    if (player.y > H) { player.x = LEVELS[currentLevel].start.x; player.y = LEVELS[currentLevel].start.y; player.vy = 0; }
+    if (player.y > H) resetPlay();
 
-    // Goal collision -> advance
+    // Animation: only advance the frame on a timer, and only while walking
+    const moving = player.vx !== 0 && player.onGround;
+    if (moving) {
+      frameTimer++;
+      if (frameTimer >= FRAME_INTERVAL) {
+        frameTimer = 0;
+        curFrame = (curFrame + 1) % FRAME_COUNT;   // modulo wrap
+      }
+    } else {
+      curFrame = 0;  // idle frame
+    }
+
+    // Goal
     const reached = player.x + player.w > goal.x && player.x < goal.x + goal.w &&
                     player.y + player.h > goal.y && player.y < goal.y + goal.h;
-    if (reached) advanceLevel();
+    if (reached) gameState = STATE_WIN;
 
-    let status;
-    if (gameWon) status = `You win! Cleared all ${LEVELS.length} levels — Click to play again`;
-    else if (banner > 0) status = `Level ${currentLevel + 1} of ${LEVELS.length} — Level complete! Keep going!`;
-    else status = `Level ${currentLevel + 1} of ${LEVELS.length} — Reach the flag! Use arrow keys or click to move`;
-    statusEl.textContent = status;
+    if (gameState === STATE_PLAYING) {
+      statusEl.textContent = `PLAYING — frame ${curFrame} — reach the flag!`;
+    }
   }
 
   function drawFlag(g) {
-    // Pole
     ctx.fillStyle = '#c9d2e6';
     ctx.fillRect(g.x + g.w / 2 - 2, g.y, 4, g.h);
-    // Flag triangle
     ctx.beginPath();
     ctx.moveTo(g.x + g.w / 2 + 2, g.y + 4);
     ctx.lineTo(g.x + g.w / 2 + 22, g.y + 12);
@@ -1656,9 +1603,23 @@ window.addEventListener('load', () => {
     ctx.closePath();
     ctx.fillStyle = '#3ecf8e';
     ctx.fill();
-    // Base
-    ctx.fillStyle = '#2a3050';
-    ctx.fillRect(g.x + g.w / 2 - 6, g.y + g.h - 4, 12, 4);
+  }
+
+  function drawPlayer() {
+    // Body
+    ctx.fillStyle = 'rgba(55,118,171,0.9)';
+    ctx.fillRect(player.x, player.y, player.w, player.h - 10);
+    ctx.strokeStyle = '#4f8ef7';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(player.x, player.y, player.w, player.h - 10);
+    // Legs animate by frame: alternate forward/back offsets
+    const legOffsets = [
+      [0, 6], [3, 3], [6, 0], [3, 3]   // 4 frames of a walk cycle
+    ];
+    const [l, r] = legOffsets[curFrame];
+    ctx.fillStyle = '#4f8ef7';
+    ctx.fillRect(player.x + 3, player.y + player.h - 10 + (6 - l), 6, 4 + l);
+    ctx.fillRect(player.x + player.w - 9, player.y + player.h - 10 + (6 - r), 6, 4 + r);
   }
 
   function draw() {
@@ -1666,7 +1627,18 @@ window.addEventListener('load', () => {
     ctx.fillStyle = '#0d1117';
     ctx.fillRect(0, 0, W, H);
 
-    // Platforms
+    if (gameState === STATE_MENU) {
+      ctx.fillStyle = '#e8eaf0';
+      ctx.font = 'bold 34px "Fraunces", serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('MY PLATFORMER', W / 2, H / 2 - 10);
+      ctx.fillStyle = '#7a84a0';
+      ctx.font = '14px "DM Mono", monospace';
+      ctx.fillText('Press SPACE or click to play', W / 2, H / 2 + 24);
+      return;
+    }
+
+    // Playing / win: draw the world
     for (const p of platforms) {
       ctx.fillStyle = p.y === GROUND_Y ? '#1e2336' : 'rgba(42,48,80,0.8)';
       ctx.fillRect(p.x, p.y, p.w, p.h);
@@ -1674,57 +1646,46 @@ window.addEventListener('load', () => {
       ctx.lineWidth = 1;
       ctx.strokeRect(p.x, p.y, p.w, p.h);
     }
+    drawFlag(goal);
+    drawPlayer();
 
-    // Goal flag
-    if (!gameWon) drawFlag(goal);
-
-    // Player
-    ctx.fillStyle = 'rgba(55,118,171,0.9)';
-    ctx.fillRect(player.x, player.y, player.w, player.h);
-    ctx.strokeStyle = '#4f8ef7';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(player.x, player.y, player.w, player.h);
-
-    // HUD
+    // HUD: frame indicator
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 14px "DM Mono", monospace';
+    ctx.font = 'bold 13px "DM Mono", monospace';
     ctx.textAlign = 'left';
-    ctx.fillText(`Level ${Math.min(currentLevel + 1, LEVELS.length)}`, 10, 22);
+    ctx.fillText(`Walk frame: ${curFrame}`, 10, 22);
 
-    if (banner > 0 && !gameWon) {
+    if (gameState === STATE_WIN) {
+      ctx.fillStyle = 'rgba(13,17,23,0.7)';
+      ctx.fillRect(0, 0, W, H);
       ctx.fillStyle = '#3ecf8e';
-      ctx.font = 'bold 22px "Fraunces", serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Level complete!', W / 2, 40);
-    }
-
-    if (gameWon) {
-      ctx.fillStyle = '#3ecf8e';
-      ctx.font = 'bold 30px "Fraunces", serif';
+      ctx.font = 'bold 32px "Fraunces", serif';
       ctx.textAlign = 'center';
       ctx.fillText('YOU WIN!', W / 2, H / 2 - 6);
-      ctx.font = '13px "DM Mono", monospace';
       ctx.fillStyle = '#7a84a0';
-      ctx.fillText('Click to play again', W / 2, H / 2 + 22);
+      ctx.font = '13px "DM Mono", monospace';
+      ctx.fillText('Press SPACE or click for the menu', W / 2, H / 2 + 22);
     }
   }
 
-  function loop() {
-    update();
-    draw();
-    requestAnimationFrame(loop);
+  function loop() { update(); draw(); requestAnimationFrame(loop); }
+
+  function startOrAdvance() {
+    if (gameState === STATE_MENU) { gameState = STATE_PLAYING; resetPlay(); statusEl.textContent = 'PLAYING — frame 0 — reach the flag!'; }
+    else if (gameState === STATE_WIN) { gameState = STATE_MENU; statusEl.textContent = 'MENU — Press Space or click to start'; }
   }
 
   document.addEventListener('keydown', e => {
     if (['ArrowLeft','ArrowRight','ArrowUp','a','d','w',' '].includes(e.key)) {
       e.preventDefault();
       keys[e.key] = true;
+      if (e.key === ' ' && gameState !== STATE_PLAYING) startOrAdvance();
     }
   });
   document.addEventListener('keyup', e => { keys[e.key] = false; });
 
   function handlePointer(cx, cy) {
-    if (gameWon) { resetGame(); return; }
+    if (gameState !== STATE_PLAYING) { startOrAdvance(); return; }
     if (cx < player.x + player.w / 2) { keys['ArrowLeft'] = true; keys['ArrowRight'] = false; }
     else { keys['ArrowRight'] = true; keys['ArrowLeft'] = false; }
     if (cy < player.y && player.onGround) keys['ArrowUp'] = true;
