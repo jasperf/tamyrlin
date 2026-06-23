@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Part 7: Enemies · Platformer Course</title>
+<title>Part 8: Levels &amp; Goals · Platformer Course</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Mono:wght@400;500&family=Literata:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -396,7 +396,7 @@ body::before {
   40%, 80% { transform: translateX(6px); }
 }
 
-.enemy-demo {
+.level-demo {
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -404,14 +404,14 @@ body::before {
   margin-bottom: 24px;
   text-align: center;
 }
-.enemy-demo canvas {
+.level-demo canvas {
   border: 1px solid var(--border);
   border-radius: 7px;
   display: block;
   margin: 12px auto 0;
   cursor: pointer;
 }
-.enemy-demo .demo-status {
+.level-demo .demo-status {
   font-family: var(--font-mono);
   font-size: 0.82rem;
   color: var(--text-muted);
@@ -691,7 +691,7 @@ body::before {
 <div class="topbar">
   <div class="topbar-left">
     <div class="logo">Student<span>'s</span> Study Hub</div>
-    <div class="week-badge">Platformer · Part 7: Enemies</div>
+    <div class="week-badge">Platformer · Part 8: Levels &amp; Goals</div>
   </div>
   <div style="display:flex;align-items:center;gap:14px;">
     <a href="../index.html" class="back-link">&larr; All sheets</a>
@@ -704,8 +704,8 @@ body::before {
 
 <div class="hero">
   <div class="hero-eyebrow">PLATFORMER PROJECT</div>
-  <h1>Part 7: <em>Enemies</em></h1>
-  <p class="hero-sub">Bring danger to your world. Add patrolling enemies that march back and forth, detect when they touch the player, and let the player defeat them with a classic stomp from above &mdash; or lose a life on contact.</p>
+  <h1>Part 8: <em>Levels &amp; Goals</em></h1>
+  <p class="hero-sub">Give your game a point. Add a goal flag the player races to reach, detect the win, and store each level as data so you can load a second, a third &mdash; a whole game &mdash; from one tidy method.</p>
   <div class="hero-meta">
     <div class="hero-chip"><span class="dot dot-python"></span> Arcade Library</div>
     <div class="hero-chip">~80 min</div>
@@ -723,130 +723,129 @@ body::before {
 
   <section id="concepts">
     <div class="section-header">
-      <div class="section-icon icon-python">&#x1F47E;</div>
+      <div class="section-icon icon-python">&#x1F3C1;</div>
       <div>
-        <h2>Enemies &amp; Hazards</h2>
+        <h2>Levels &amp; Goals</h2>
         <span class="sub-label">CORE CONCEPTS</span>
       </div>
     </div>
 
     <div class="info-box">
-      <h3>What Makes an Enemy?</h3>
-      <p>An enemy is a sprite that <strong>moves on its own</strong> and <strong>threatens the player</strong>. Unlike a coin (which the player wants to touch), an enemy is something the player must avoid &mdash; or defeat. The building blocks are exactly the ones you already know: a sprite, a SpriteList, and collision detection.</p>
+      <h3>From a Sandbox to a Game</h3>
+      <p>So far your player can run, jump, collect coins, and dodge enemies &mdash; but there's nowhere to <em>go</em>. A game needs a <strong>goal</strong> (something to reach) and a <strong>win condition</strong> (what counts as success). Once one level can be won, the natural next step is having <strong>several</strong> levels.</p>
       <p><strong>The pattern:</strong></p>
       <ol>
-        <li>Create an <strong>Enemy sprite class</strong> that extends <code>arcade.Sprite</code></li>
-        <li>Give each enemy a <strong>patrol</strong> &mdash; move it every frame and reverse at boundaries</li>
-        <li>Store enemies in their own <strong>SpriteList</strong></li>
-        <li>Each frame, check for <strong>collisions</strong> between the player and the enemy list</li>
-        <li>Decide the outcome: <strong>stomp</strong> from above defeats the enemy, side contact <strong>hurts</strong> the player</li>
+        <li>Add a <strong>goal sprite</strong> (a flag) at the end of the level</li>
+        <li>Each frame, check whether the player has <strong>reached the goal</strong></li>
+        <li>Store each level's layout as <strong>data</strong> (positions of platforms, coins, enemies, goal)</li>
+        <li>Write one <strong>setup_level()</strong> method that builds a level from that data</li>
+        <li>On reaching the goal, <strong>advance</strong> to the next level &mdash; or win the game</li>
       </ol>
     </div>
 
     <div class="info-box">
-      <h3>The Enemy Class &amp; Patrolling</h3>
-      <p>The trick to a patrolling enemy is giving it a left and right <strong>boundary</strong>. The enemy moves by <code>change_x</code> each frame; when it reaches an edge, you flip the sign of <code>change_x</code> so it walks the other way:</p>
+      <h3>The Goal Sprite</h3>
+      <p>The goal is just a single sprite placed at the end of the level. Because there's only one, you store it on its own (not in a SpriteList):</p>
       <div class="code-block">
-<span class="code-line"><span class="variable">ENEMY_SCALE</span> = <span class="number">0.5</span></span>
-<span class="code-line"><span class="variable">ENEMY_SPEED</span> = <span class="number">2</span></span>
-<span class="code-line"></span>
-<span class="code-line"><span class="keyword">class</span> <span class="function">Enemy</span>(<span class="variable">arcade.Sprite</span>):</span>
-<span class="code-line">    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="variable">self</span>, <span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">left</span>, <span class="variable">right</span>):</span>
-<span class="code-line">        <span class="keyword">super</span>().<span class="function">__init__</span>(</span>
-<span class="code-line">            <span class="string">"assets/sprites/enemy.png"</span>, <span class="variable">ENEMY_SCALE</span></span>
-<span class="code-line">        )</span>
-<span class="code-line">        <span class="variable">self.center_x</span> = <span class="variable">x</span></span>
-<span class="code-line">        <span class="variable">self.center_y</span> = <span class="variable">y</span></span>
-<span class="code-line">        <span class="variable">self.left_bound</span> = <span class="variable">left</span></span>
-<span class="code-line">        <span class="variable">self.right_bound</span> = <span class="variable">right</span></span>
-<span class="code-line">        <span class="variable">self.change_x</span> = <span class="variable">ENEMY_SPEED</span></span>
-<span class="code-line"></span>
-<span class="code-line">    <span class="keyword">def</span> <span class="function">update</span>(<span class="variable">self</span>, <span class="variable">delta_time</span>=<span class="number">1</span>/<span class="number">60</span>):</span>
-<span class="code-line">        <span class="variable">self.center_x</span> += <span class="variable">self.change_x</span></span>
-<span class="code-line">        <span class="keyword">if</span> <span class="variable">self.center_x</span> < <span class="variable">self.left_bound</span>:</span>
-<span class="code-line">            <span class="variable">self.change_x</span> *= -<span class="number">1</span></span>
-<span class="code-line">        <span class="keyword">elif</span> <span class="variable">self.center_x</span> > <span class="variable">self.right_bound</span>:</span>
-<span class="code-line">            <span class="variable">self.change_x</span> *= -<span class="number">1</span></span>
-      </div>
-      <p>Arcade calls every sprite's <code>update()</code> method when you run <code>self.enemy_list.update()</code>. Putting the patrol logic <em>inside</em> the Enemy class keeps each enemy responsible for its own movement.</p>
-    </div>
-
-    <div class="info-box">
-      <h3>Building the Enemy List</h3>
-      <p>Just like coins and platforms, enemies live in their own <code>SpriteList</code>. Each enemy gets a position and a patrol range:</p>
-      <div class="code-block">
-<span class="code-line"><span class="comment"># In Game.setup()</span></span>
-<span class="code-line"><span class="variable">self.enemy_list</span> = <span class="variable">arcade.SpriteList</span>()</span>
-<span class="code-line"></span>
-<span class="code-line"><span class="comment"># Enemy that patrols between x=300 and x=500</span></span>
-<span class="code-line"><span class="variable">enemy</span> = <span class="variable">Enemy</span>(<span class="number">300</span>, <span class="number">96</span>, <span class="variable">left</span>=<span class="number">300</span>, <span class="variable">right</span>=<span class="number">500</span>)</span>
-<span class="code-line"><span class="variable">self.enemy_list.append</span>(<span class="variable">enemy</span>)</span>
-      </div>
-    </div>
-
-    <div class="info-box">
-      <h3>Updating &amp; Drawing Enemies</h3>
-      <p>Call <code>update()</code> on the enemy list every frame so they patrol, and <code>draw()</code> them with the main (game-world) camera so they scroll with the level:</p>
-      <div class="code-block">
-<span class="code-line"><span class="comment"># In Game.on_update()</span></span>
-<span class="code-line"><span class="variable">self.enemy_list.update</span>()</span>
-<span class="code-line"></span>
-<span class="code-line"><span class="comment"># In Game.on_draw(), with the main camera active</span></span>
-<span class="code-line"><span class="variable">self.enemy_list.draw</span>()</span>
-      </div>
-    </div>
-
-    <div class="info-box">
-      <h3>Stomp or Get Hurt</h3>
-      <p>When the player collides with an enemy, the outcome depends on <em>direction</em>. In the classic platformer rule, if the player is <strong>falling</strong> and lands on top, the enemy is defeated. Otherwise, the player gets hurt:</p>
-      <div class="code-block">
-<span class="code-line"><span class="comment"># In Game.on_update()</span></span>
-<span class="code-line"><span class="variable">enemies_hit</span> = <span class="variable">arcade.check_for_collision_with_list</span>(</span>
-<span class="code-line">    <span class="variable">self.player</span>, <span class="variable">self.enemy_list</span></span>
+<span class="code-line"><span class="comment"># In Game.setup_level()</span></span>
+<span class="code-line"><span class="variable">self.goal</span> = <span class="variable">arcade.Sprite</span>(</span>
+<span class="code-line">    <span class="string">"assets/sprites/flag.png"</span>, <span class="number">0.5</span></span>
 <span class="code-line">)</span>
-<span class="code-line"></span>
-<span class="code-line"><span class="keyword">for</span> <span class="variable">enemy</span> <span class="keyword">in</span> <span class="variable">enemies_hit</span>:</span>
-<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.player.change_y</span> < <span class="number">0</span> <span class="keyword">and</span> \</span>
-<span class="code-line">       <span class="variable">self.player.center_y</span> > <span class="variable">enemy.center_y</span>:</span>
-<span class="code-line">        <span class="comment"># Falling onto the enemy &mdash; defeat it</span></span>
-<span class="code-line">        <span class="variable">enemy.remove_from_sprite_lists</span>()</span>
-<span class="code-line">        <span class="variable">self.player.change_y</span> = <span class="number">12</span>  <span class="comment"># little bounce</span></span>
-<span class="code-line">        <span class="variable">self.score</span> += <span class="number">10</span></span>
-<span class="code-line">    <span class="keyword">else</span>:</span>
-<span class="code-line">        <span class="comment"># Hit from the side &mdash; take damage</span></span>
-<span class="code-line">        <span class="variable">self.hurt_player</span>()</span>
+<span class="code-line"><span class="variable">self.goal.center_x</span> = <span class="number">1180</span></span>
+<span class="code-line"><span class="variable">self.goal.center_y</span> = <span class="number">128</span></span>
       </div>
-      <p><strong>Why check <code>change_y &lt; 0</code>?</strong> A negative vertical velocity means the player is moving <em>downward</em>. Combined with the player's centre being above the enemy's centre, that reliably means &ldquo;landed on top.&rdquo;</p>
     </div>
 
     <div class="info-box">
-      <h3>Lives &amp; Respawning</h3>
-      <p>Getting hurt should cost something. A simple approach: subtract a life, send the player back to the start, and end the game when lives run out:</p>
+      <h3>Detecting the Win</h3>
+      <p>Because the goal is a <em>single</em> sprite, use <code>arcade.check_for_collision()</code> &mdash; the version that compares two sprites &mdash; rather than the <code>..._with_list()</code> version:</p>
       <div class="code-block">
-<span class="code-line"><span class="keyword">def</span> <span class="function">hurt_player</span>(<span class="variable">self</span>):</span>
-<span class="code-line">    <span class="variable">self.lives</span> -= <span class="number">1</span></span>
-<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.lives</span> <= <span class="number">0</span>:</span>
-<span class="code-line">        <span class="variable">self.game_over</span> = <span class="keyword">True</span></span>
-<span class="code-line">    <span class="keyword">else</span>:</span>
-<span class="code-line">        <span class="comment"># Respawn at the start position</span></span>
-<span class="code-line">        <span class="variable">self.player.center_x</span> = <span class="variable">START_X</span></span>
-<span class="code-line">        <span class="variable">self.player.center_y</span> = <span class="variable">START_Y</span></span>
-<span class="code-line">        <span class="variable">self.player.change_x</span> = <span class="number">0</span></span>
-<span class="code-line">        <span class="variable">self.player.change_y</span> = <span class="number">0</span></span>
+<span class="code-line"><span class="comment"># In Game.on_update()</span></span>
+<span class="code-line"><span class="keyword">if</span> <span class="variable">arcade.check_for_collision</span>(<span class="variable">self.player</span>, <span class="variable">self.goal</span>):</span>
+<span class="code-line">    <span class="variable">self.advance_level</span>()</span>
       </div>
+      <p><strong>Two collision helpers, two jobs:</strong></p>
+      <ul>
+        <li><code>check_for_collision(a, b)</code> &mdash; one sprite vs <em>one</em> sprite (the goal)</li>
+        <li><code>check_for_collision_with_list(a, lst)</code> &mdash; one sprite vs a <em>whole list</em> (coins, enemies)</li>
+      </ul>
+    </div>
+
+    <div class="info-box">
+      <h3>Levels as Data</h3>
+      <p>Hard-coding one level inside <code>setup()</code> works for a single screen, but it doesn't scale. Instead, describe each level as a <strong>dictionary</strong> and keep them in a list. Data is easy to add to, tweak, and even load from a file later:</p>
+      <div class="code-block">
+<span class="code-line"><span class="variable">LEVELS</span> = [</span>
+<span class="code-line">    {</span>
+<span class="code-line">        <span class="string">"platforms"</span>: [(<span class="number">200</span>, <span class="number">96</span>), (<span class="number">400</span>, <span class="number">160</span>)],</span>
+<span class="code-line">        <span class="string">"coins"</span>:     [(<span class="number">400</span>, <span class="number">200</span>)],</span>
+<span class="code-line">        <span class="string">"enemies"</span>:   [(<span class="number">300</span>, <span class="number">96</span>, <span class="number">250</span>, <span class="number">500</span>)],</span>
+<span class="code-line">        <span class="string">"goal"</span>:      (<span class="number">760</span>, <span class="number">128</span>),</span>
+<span class="code-line">    },</span>
+<span class="code-line">    {</span>
+<span class="code-line">        <span class="string">"platforms"</span>: [(<span class="number">150</span>, <span class="number">140</span>), (<span class="number">500</span>, <span class="number">220</span>)],</span>
+<span class="code-line">        <span class="string">"coins"</span>:     [(<span class="number">150</span>, <span class="number">180</span>), (<span class="number">500</span>, <span class="number">260</span>)],</span>
+<span class="code-line">        <span class="string">"enemies"</span>:   [(<span class="number">350</span>, <span class="number">96</span>, <span class="number">300</span>, <span class="number">600</span>)],</span>
+<span class="code-line">        <span class="string">"goal"</span>:      (<span class="number">900</span>, <span class="number">128</span>),</span>
+<span class="code-line">    },</span>
+<span class="code-line">]</span>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3>Building a Level from Data</h3>
+      <p>One method reads a level dictionary and constructs every sprite list from it. The key idea: <strong>rebuild the lists fresh each time</strong> so the previous level's sprites don't linger:</p>
+      <div class="code-block">
+<span class="code-line"><span class="keyword">def</span> <span class="function">setup_level</span>(<span class="variable">self</span>, <span class="variable">level_index</span>):</span>
+<span class="code-line">    <span class="variable">data</span> = <span class="variable">LEVELS</span>[<span class="variable">level_index</span>]</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="comment"># Fresh lists every time</span></span>
+<span class="code-line">    <span class="variable">self.platform_list</span> = <span class="variable">arcade.SpriteList</span>()</span>
+<span class="code-line">    <span class="variable">self.coin_list</span> = <span class="variable">arcade.SpriteList</span>()</span>
+<span class="code-line">    <span class="variable">self.enemy_list</span> = <span class="variable">arcade.SpriteList</span>()</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="keyword">for</span> <span class="variable">x</span>, <span class="variable">y</span> <span class="keyword">in</span> <span class="variable">data</span>[<span class="string">"coins"</span>]:</span>
+<span class="code-line">        <span class="variable">self.coin_list.append</span>(<span class="variable">Coin</span>(<span class="variable">x</span>, <span class="variable">y</span>))</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="keyword">for</span> <span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">left</span>, <span class="variable">right</span> <span class="keyword">in</span> <span class="variable">data</span>[<span class="string">"enemies"</span>]:</span>
+<span class="code-line">        <span class="variable">self.enemy_list.append</span>(<span class="variable">Enemy</span>(<span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">left</span>, <span class="variable">right</span>))</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="variable">gx</span>, <span class="variable">gy</span> = <span class="variable">data</span>[<span class="string">"goal"</span>]</span>
+<span class="code-line">    <span class="variable">self.goal</span> = <span class="variable">arcade.Sprite</span>(<span class="string">"assets/sprites/flag.png"</span>, <span class="number">0.5</span>)</span>
+<span class="code-line">    <span class="variable">self.goal.center_x</span> = <span class="variable">gx</span></span>
+<span class="code-line">    <span class="variable">self.goal.center_y</span> = <span class="variable">gy</span></span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="comment"># Move the player back to the start</span></span>
+<span class="code-line">    <span class="variable">self.player.center_x</span> = <span class="variable">START_X</span></span>
+<span class="code-line">    <span class="variable">self.player.center_y</span> = <span class="variable">START_Y</span></span>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3>Advancing &amp; Winning</h3>
+      <p>Keep an index of the current level. When the player reaches the goal, move to the next one &mdash; unless that was the last level, in which case the whole game is won:</p>
+      <div class="code-block">
+<span class="code-line"><span class="keyword">def</span> <span class="function">advance_level</span>(<span class="variable">self</span>):</span>
+<span class="code-line">    <span class="variable">self.current_level</span> += <span class="number">1</span></span>
+<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.current_level</span> >= <span class="keyword">len</span>(<span class="variable">LEVELS</span>):</span>
+<span class="code-line">        <span class="variable">self.game_won</span> = <span class="keyword">True</span></span>
+<span class="code-line">    <span class="keyword">else</span>:</span>
+<span class="code-line">        <span class="variable">self.setup_level</span>(<span class="variable">self.current_level</span>)</span>
+      </div>
+      <p>Notice <code>current_level &gt;= len(LEVELS)</code> rather than <code>==</code>. Using <code>&gt;=</code> is a safe habit &mdash; it still catches the end even if the index ever overshoots.</p>
     </div>
 
     <div class="warning-box">
       <span class="warn-icon">&#9888;&#65039;</span>
-      <p><strong>Common Pitfall:</strong> If you forget the <code>self.player.change_y &lt; 0</code> check and simply defeat the enemy on <em>any</em> contact, the player can kill enemies by walking straight into them. The direction check is what makes the stomp feel fair.</p>
+      <p><strong>Common Pitfall:</strong> If <code>setup_level()</code> <em>appends</em> to the existing lists instead of creating fresh <code>SpriteList()</code> objects, every level keeps the previous level's platforms, coins, and enemies. The screen fills up with leftovers. Always start each level with new, empty lists.</p>
     </div>
 
-    <!-- Interactive Enemy Patrol Demo -->
-    <div class="enemy-demo" id="enemy-demo">
-      <h3 style="font-family: var(--font-display); font-size: 1rem; font-weight: 600; margin-bottom: 4px;">Interactive: Stomp the Patrol</h3>
-      <p style="font-size: 0.88rem; color: var(--text-muted);">Use arrow keys (or click/tap) to move. Jump <strong>onto</strong> an enemy to defeat it &mdash; touch one from the side and you lose a life!</p>
-      <canvas id="enemy-demo-canvas" width="600" height="300"></canvas>
-      <div class="demo-status" id="enemy-demo-status">Lives: 3 &mdash; Enemies left: 3 &mdash; Use arrow keys or click to move</div>
+    <!-- Interactive Level/Goal Demo -->
+    <div class="level-demo" id="level-demo">
+      <h3 style="font-family: var(--font-display); font-size: 1rem; font-weight: 600; margin-bottom: 4px;">Interactive: Reach the Flag</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted);">Use arrow keys (or click/tap) to move. Reach the <span style="color:#3ecf8e;">green flag</span> to clear the level &mdash; there are two!</p>
+      <canvas id="level-demo-canvas" width="600" height="300"></canvas>
+      <div class="demo-status" id="level-demo-status">Level 1 of 2 &mdash; Reach the flag! Use arrow keys or click to move</div>
     </div>
 
   </section>
@@ -860,12 +859,12 @@ body::before {
       </div>
     </div>
 
-    <!-- Q1: change_x for movement -->
+    <!-- Q1: goal collision function -->
     <div class="q-card" id="qcard-q1">
       <div class="q-header">
         <div class="q-num" data-num="Q1"></div>
         <div class="q-header-text">
-          <div class="q-text">Inside the enemy's <code>update()</code>, which line actually moves the enemy horizontally?</div>
+          <div class="q-text">The goal is a single sprite. Which function checks whether the player has reached it?</div>
           <div class="q-marks">1 mark</div>
         </div>
       </div>
@@ -873,36 +872,36 @@ body::before {
         <div class="mcq-options" id="q1-opts">
           <div class="mcq-opt" onclick="selectMCQ('q1', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) <code>self.change_x = ENEMY_SPEED</code></span>
+            <span>A) <code>arcade.check_for_collision_with_list(self.player, self.goal)</code></span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q1', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) <code>self.center_x += self.change_x</code></span>
+            <span>B) <code>arcade.check_for_collision(self.player, self.goal)</code></span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q1', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) <code>self.left_bound = left</code></span>
+            <span>C) <code>self.goal.reached(self.player)</code></span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q1', this, 'd')">
             <div class="opt-indicator"></div>
-            <span>D) <code>self.change_x *= -1</code></span>
+            <span>D) <code>arcade.win(self.player, self.goal)</code></span>
           </div>
         </div>
         <div class="q-actions">
           <button class="btn btn-check" onclick="checkMCQ('q1','b','Q1')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q1','change_x is just a speed. Something has to add it to the position each frame.')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q1','self.center_x += self.change_x &mdash; adds the speed to the position every frame')">Show Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q1','Use the list version only when the second argument is a SpriteList. The goal is one sprite.')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q1','arcade.check_for_collision(self.player, self.goal) &mdash; for one sprite versus one sprite')">Show Answer</button>
         </div>
         <div class="feedback" id="q1-fb"></div>
       </div>
     </div>
 
-    <!-- Q2: reversing direction -->
+    <!-- Q2: why data -->
     <div class="q-card" id="qcard-q2">
       <div class="q-header">
         <div class="q-num" data-num="Q2"></div>
         <div class="q-header-text">
-          <div class="q-text">How does a patrolling enemy turn around when it reaches a boundary?</div>
+          <div class="q-text">Why store each level's layout as data (a dictionary in a list) rather than hard-coding it in <code>setup()</code>?</div>
           <div class="q-marks">1 mark</div>
         </div>
       </div>
@@ -910,36 +909,36 @@ body::before {
         <div class="mcq-options" id="q2-opts">
           <div class="mcq-opt" onclick="selectMCQ('q2', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) By multiplying <code>change_x</code> by <code>-1</code> to flip its direction</span>
+            <span>A) Data is the only thing Arcade can draw</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q2', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) By setting <code>change_x</code> to <code>0</code></span>
+            <span>B) One <code>setup_level()</code> method can build any level from its data, so adding levels means adding data &mdash; not more code</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q2', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) By calling <code>remove_from_sprite_lists()</code></span>
+            <span>C) Dictionaries make the game run faster</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q2', this, 'd')">
             <div class="opt-indicator"></div>
-            <span>D) By increasing <code>center_y</code></span>
+            <span>D) You cannot create sprites inside <code>setup()</code></span>
           </div>
         </div>
         <div class="q-actions">
-          <button class="btn btn-check" onclick="checkMCQ('q2','a','Q2')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q2','To walk the other way, the speed needs the opposite sign.')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q2','Multiply change_x by -1 so the same speed now points the other way')">Show Answer</button>
+          <button class="btn btn-check" onclick="checkMCQ('q2','b','Q2')">Check Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q2','Think about what changes when you want a 5th level: more data, or more code?')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q2','Separating data from logic lets one method build any level &mdash; new levels are just new data entries')">Show Answer</button>
         </div>
         <div class="feedback" id="q2-fb"></div>
       </div>
     </div>
 
-    <!-- Q3: collision function -->
+    <!-- Q3: fresh lists -->
     <div class="q-card" id="qcard-q3">
       <div class="q-header">
         <div class="q-num" data-num="Q3"></div>
         <div class="q-header-text">
-          <div class="q-text">Which function checks whether the player is touching any enemy?</div>
+          <div class="q-text">Why does <code>setup_level()</code> create brand-new <code>SpriteList()</code> objects each time it runs?</div>
           <div class="q-marks">1 mark</div>
         </div>
       </div>
@@ -947,122 +946,125 @@ body::before {
         <div class="mcq-options" id="q3-opts">
           <div class="mcq-opt" onclick="selectMCQ('q3', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) <code>arcade.enemy_collision(player, enemy_list)</code></span>
+            <span>A) So the previous level's sprites are cleared instead of piling up</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q3', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) <code>player.touches(enemy_list)</code></span>
+            <span>B) Because SpriteLists can only be used once</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q3', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) <code>arcade.check_for_collision_with_list(player, enemy_list)</code></span>
+            <span>C) To make the player jump higher</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q3', this, 'd')">
             <div class="opt-indicator"></div>
-            <span>D) <code>enemy_list.hit(player)</code></span>
+            <span>D) Arcade deletes lists automatically between frames</span>
           </div>
         </div>
         <div class="q-actions">
-          <button class="btn btn-check" onclick="checkMCQ('q3','c','Q3')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q3','It is the same function you used for coins and platforms.')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q3','arcade.check_for_collision_with_list(player, enemy_list) &mdash; the same one used for coins and platforms')">Show Answer</button>
+          <button class="btn btn-check" onclick="checkMCQ('q3','a','Q3')">Check Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q3','What would the screen look like if level 2 kept all of level 1 sprites too?')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q3','Fresh lists clear the old level. Re-using the same lists would leave the previous platforms, coins, and enemies on screen.')">Show Answer</button>
         </div>
         <div class="feedback" id="q3-fb"></div>
       </div>
     </div>
 
-    <!-- Q4: code tracing patrol -->
+    <!-- Q4: code trace advance_level -->
     <div class="q-card" id="qcard-q4">
       <div class="q-header">
         <div class="q-num" data-num="Q4"></div>
         <div class="q-header-text">
-          <div class="q-text">An enemy starts at <code>center_x = 498</code> with <code>change_x = 2</code>, <code>right_bound = 500</code>. After <strong>two</strong> calls to <code>update()</code>, what is its <code>center_x</code>?</div>
+          <div class="q-text">There are 3 levels (<code>len(LEVELS) == 3</code>). The player is on the last level, so <code>self.current_level</code> is <code>2</code>. They reach the goal and <code>advance_level()</code> runs. What happens?</div>
           <div class="q-marks">2 marks</div>
         </div>
       </div>
       <div class="q-body">
         <div class="code-block">
-<span class="code-line"><span class="keyword">def</span> <span class="function">update</span>(<span class="variable">self</span>, <span class="variable">delta_time</span>=<span class="number">1</span>/<span class="number">60</span>):</span>
-<span class="code-line">    <span class="variable">self.center_x</span> += <span class="variable">self.change_x</span></span>
-<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.center_x</span> > <span class="variable">self.right_bound</span>:</span>
-<span class="code-line">        <span class="variable">self.change_x</span> *= -<span class="number">1</span></span>
+<span class="code-line"><span class="keyword">def</span> <span class="function">advance_level</span>(<span class="variable">self</span>):</span>
+<span class="code-line">    <span class="variable">self.current_level</span> += <span class="number">1</span></span>
+<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.current_level</span> >= <span class="keyword">len</span>(<span class="variable">LEVELS</span>):</span>
+<span class="code-line">        <span class="variable">self.game_won</span> = <span class="keyword">True</span></span>
+<span class="code-line">    <span class="keyword">else</span>:</span>
+<span class="code-line">        <span class="variable">self.setup_level</span>(<span class="variable">self.current_level</span>)</span>
         </div>
         <div class="mcq-options" id="q4-opts">
           <div class="mcq-opt" onclick="selectMCQ('q4', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) 502</span>
+            <span>A) <code>current_level</code> becomes 3, <code>3 &gt;= 3</code> is True, so <code>game_won</code> is set to True</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q4', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) 498</span>
+            <span>B) <code>setup_level(3)</code> runs and loads a fourth level</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q4', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) 504</span>
+            <span>C) Nothing happens because 2 is already the last index</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q4', this, 'd')">
             <div class="opt-indicator"></div>
-            <span>D) 500</span>
+            <span>D) The game crashes with an IndexError</span>
           </div>
         </div>
         <div class="q-actions">
           <button class="btn btn-check" onclick="checkMCQ('q4','a','Q4')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q4','Call 1: 498 + 2 = 500, and 500 > 500 is False so change_x stays +2. Now trace call 2 the same way.')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q4','502 &mdash; Call 1: 498+2 = 500 (500 &gt; 500 is False, so change_x stays +2). Call 2: 500+2 = 502, now 502 &gt; 500 so change_x flips to -2 &mdash; but that only changes direction for future frames. center_x is already 502.')">Show Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q4','First the index increments to 3. Then compare 3 to len(LEVELS), which is 3.')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q4','current_level becomes 3; 3 &gt;= 3 is True, so game_won = True. The &gt;= check prevents trying to load a non-existent LEVELS[3].')">Show Answer</button>
         </div>
         <div class="feedback" id="q4-fb"></div>
       </div>
     </div>
 
-    <!-- Q5: debug stomp -->
+    <!-- Q5: debug leftover sprites -->
     <div class="q-card" id="qcard-q5">
       <div class="q-header">
         <div class="q-num" data-num="Q5"></div>
         <div class="q-header-text">
-          <div class="q-text">Debug: With this code, the player defeats enemies just by walking into them &mdash; no jump needed. What is missing?</div>
+          <div class="q-text">Debug: After beating level 1, level 2 shows <em>all</em> of level 1's coins and enemies as well as level 2's. Which fix is correct?</div>
           <div class="q-marks">2 marks</div>
         </div>
       </div>
       <div class="q-body">
         <div class="code-block">
-<span class="code-line"><span class="keyword">for</span> <span class="variable">enemy</span> <span class="keyword">in</span> <span class="variable">enemies_hit</span>:</span>
-<span class="code-line">    <span class="comment"># defeats the enemy on ANY contact</span></span>
-<span class="code-line">    <span class="variable">enemy.remove_from_sprite_lists</span>()</span>
-<span class="code-line">    <span class="variable">self.score</span> += <span class="number">10</span></span>
+<span class="code-line"><span class="keyword">def</span> <span class="function">setup_level</span>(<span class="variable">self</span>, <span class="variable">level_index</span>):</span>
+<span class="code-line">    <span class="variable">data</span> = <span class="variable">LEVELS</span>[<span class="variable">level_index</span>]</span>
+<span class="code-line">    <span class="comment"># lists were created once in setup(), reused here</span></span>
+<span class="code-line">    <span class="keyword">for</span> <span class="variable">x</span>, <span class="variable">y</span> <span class="keyword">in</span> <span class="variable">data</span>[<span class="string">"coins"</span>]:</span>
+<span class="code-line">        <span class="variable">self.coin_list.append</span>(<span class="variable">Coin</span>(<span class="variable">x</span>, <span class="variable">y</span>))</span>
         </div>
         <div class="mcq-options" id="q5-opts">
           <div class="mcq-opt" onclick="selectMCQ('q5', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) A direction check, e.g. <code>if self.player.change_y &lt; 0 and self.player.center_y &gt; enemy.center_y:</code></span>
+            <span>A) Re-create the lists at the top of <code>setup_level()</code>: <code>self.coin_list = arcade.SpriteList()</code> (and the same for enemies/platforms)</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q5', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) A call to <code>self.enemy_list.draw()</code></span>
+            <span>B) Increase <code>COIN_SCALE</code> so the old coins are hidden</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q5', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) A larger <code>ENEMY_SPEED</code> value</span>
+            <span>C) Call <code>setup_level()</code> twice</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q5', this, 'd')">
             <div class="opt-indicator"></div>
-            <span>D) A second SpriteList for the player</span>
+            <span>D) Move the goal further to the right</span>
           </div>
         </div>
         <div class="q-actions">
           <button class="btn btn-check" onclick="checkMCQ('q5','a','Q5')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q5','A stomp should only count when the player is falling onto the enemy from above.')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q5','A direction check &mdash; only defeat the enemy when the player is moving downward (change_y &lt; 0) and is above the enemy; otherwise the player is hurt')">Show Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q5','The leftovers are still in the same lists. You need empty lists before appending the new level.')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q5','Re-create each SpriteList at the start of setup_level() so it begins empty &mdash; or call .clear() on each list before appending')">Show Answer</button>
         </div>
         <div class="feedback" id="q5-fb"></div>
       </div>
     </div>
 
-    <!-- Q6: where to update enemies -->
+    <!-- Q6: which collision helper -->
     <div class="q-card" id="qcard-q6">
       <div class="q-header">
         <div class="q-num" data-num="Q6"></div>
         <div class="q-header-text">
-          <div class="q-text">Where should you call <code>self.enemy_list.update()</code> so enemies patrol smoothly?</div>
+          <div class="q-text">You want to check the player against the <em>coin list</em> (many coins). Which helper is correct?</div>
           <div class="q-marks">1 mark</div>
         </div>
       </div>
@@ -1070,36 +1072,36 @@ body::before {
         <div class="mcq-options" id="q6-opts">
           <div class="mcq-opt" onclick="selectMCQ('q6', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) In <code>on_draw()</code>, next to the drawing calls</span>
+            <span>A) <code>arcade.check_for_collision(self.player, self.coin_list)</code></span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q6', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) In <code>on_update()</code>, which runs every frame</span>
+            <span>B) <code>arcade.check_for_collision_with_list(self.player, self.coin_list)</code></span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q6', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) In <code>setup()</code>, once at the start</span>
+            <span>C) Either one works the same way</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q6', this, 'd')">
             <div class="opt-indicator"></div>
-            <span>D) In <code>__init__()</code> of the Game class</span>
+            <span>D) <code>self.coin_list.check(self.player)</code></span>
           </div>
         </div>
         <div class="q-actions">
           <button class="btn btn-check" onclick="checkMCQ('q6','b','Q6')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q6','Movement needs to happen continuously, not just once. on_draw is only for drawing.')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q6','In on_update(), which Arcade calls every frame &mdash; that is where game logic and movement belong')">Show Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q6','The second argument is a list, so you need the ..._with_list version.')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q6','check_for_collision_with_list() &mdash; use it whenever the second argument is a SpriteList; check_for_collision() is for a single sprite')">Show Answer</button>
         </div>
         <div class="feedback" id="q6-fb"></div>
       </div>
     </div>
 
-    <!-- Q7: lives / game over -->
+    <!-- Q7: why reload vs move player -->
     <div class="q-card" id="qcard-q7">
       <div class="q-header">
         <div class="q-num" data-num="Q7"></div>
         <div class="q-header-text">
-          <div class="q-text">In <code>hurt_player()</code>, why check <code>if self.lives &lt;= 0</code> before respawning the player?</div>
+          <div class="q-text">When advancing to the next level, why call <code>setup_level(self.current_level)</code> instead of just moving the player back to the start?</div>
           <div class="q-marks">2 marks</div>
         </div>
       </div>
@@ -1107,25 +1109,25 @@ body::before {
         <div class="mcq-options" id="q7-opts">
           <div class="mcq-opt" onclick="selectMCQ('q7', this, 'a')">
             <div class="opt-indicator"></div>
-            <span>A) To make the enemy patrol faster</span>
+            <span>A) Moving the player is illegal in Arcade</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q7', this, 'b')">
             <div class="opt-indicator"></div>
-            <span>B) So the game can end (game over) when there are no lives left, instead of endlessly respawning</span>
+            <span>B) The next level has a different layout &mdash; new platforms, coins, enemies, and goal must be built from that level's data</span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q7', this, 'c')">
             <div class="opt-indicator"></div>
-            <span>C) Because <code>lives</code> cannot be negative in Python</span>
+            <span>C) <code>setup_level()</code> is faster than setting <code>center_x</code></span>
           </div>
           <div class="mcq-opt" onclick="selectMCQ('q7', this, 'd')">
             <div class="opt-indicator"></div>
-            <span>D) To reload all the sprite images</span>
+            <span>D) The player sprite must be recreated every level</span>
           </div>
         </div>
         <div class="q-actions">
           <button class="btn btn-check" onclick="checkMCQ('q7','b','Q7')">Check Answer</button>
-          <button class="btn btn-hint" onclick="showHint('q7','What should happen the moment the last life is gone?')">Hint</button>
-          <button class="btn btn-reveal" onclick="revealAnswer('q7','So the game ends when lives reach zero. Without the check, the player would respawn forever and could never lose.')">Show Answer</button>
+          <button class="btn btn-hint" onclick="showHint('q7','Moving the player only repositions one sprite. What about all the OTHER sprites the new level needs?')">Hint</button>
+          <button class="btn btn-reveal" onclick="revealAnswer('q7','Each level has its own platforms, coins, enemies, and goal. setup_level() rebuilds them all from the level data; just moving the player would leave the old level in place.')">Show Answer</button>
         </div>
         <div class="feedback" id="q7-fb"></div>
       </div>
@@ -1143,106 +1145,97 @@ body::before {
     </div>
 
     <div class="info-box">
-      <h3>Add Patrolling Enemies to Your Game</h3>
-      <p>Time to add danger! Create an enemy that marches back and forth, let the player stomp it from above, and lose a life on side contact. Build on the game you made in Part 6.</p>
+      <h3>Add a Goal and a Second Level</h3>
+      <p>Turn your sandbox into a real game: add a goal flag, detect the win, and load levels from a data list. Build on the game you made in Part 7.</p>
     </div>
 
     <div class="info-box">
-      <h3>Step 1: Create the Enemy Class</h3>
-      <p>Create a new file <code>enemy.py</code> (or add the class to your existing <code>game.py</code>):</p>
+      <h3>Step 1: Describe Your Levels as Data</h3>
+      <p>Near the top of <code>game.py</code>, define a list of level dictionaries. Start with two:</p>
       <div class="code-block">
-<span class="code-line"><span class="keyword">import</span> <span class="variable">arcade</span></span>
+<span class="code-line"><span class="variable">START_X</span>, <span class="variable">START_Y</span> = <span class="number">64</span>, <span class="number">128</span></span>
 <span class="code-line"></span>
-<span class="code-line"><span class="variable">ENEMY_SCALE</span> = <span class="number">0.5</span></span>
-<span class="code-line"><span class="variable">ENEMY_SPEED</span> = <span class="number">2</span></span>
-<span class="code-line"></span>
-<span class="code-line"><span class="keyword">class</span> <span class="function">Enemy</span>(<span class="variable">arcade.Sprite</span>):</span>
-<span class="code-line">    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="variable">self</span>, <span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">left</span>, <span class="variable">right</span>):</span>
-<span class="code-line">        <span class="keyword">super</span>().<span class="function">__init__</span>(</span>
-<span class="code-line">            <span class="string">"assets/sprites/enemy.png"</span>, <span class="variable">ENEMY_SCALE</span></span>
-<span class="code-line">        )</span>
-<span class="code-line">        <span class="variable">self.center_x</span> = <span class="variable">x</span></span>
-<span class="code-line">        <span class="variable">self.center_y</span> = <span class="variable">y</span></span>
-<span class="code-line">        <span class="variable">self.left_bound</span> = <span class="variable">left</span></span>
-<span class="code-line">        <span class="variable">self.right_bound</span> = <span class="variable">right</span></span>
-<span class="code-line">        <span class="variable">self.change_x</span> = <span class="variable">ENEMY_SPEED</span></span>
-<span class="code-line"></span>
-<span class="code-line">    <span class="keyword">def</span> <span class="function">update</span>(<span class="variable">self</span>, <span class="variable">delta_time</span>=<span class="number">1</span>/<span class="number">60</span>):</span>
-<span class="code-line">        <span class="variable">self.center_x</span> += <span class="variable">self.change_x</span></span>
-<span class="code-line">        <span class="keyword">if</span> <span class="variable">self.center_x</span> < <span class="variable">self.left_bound</span> <span class="keyword">or</span> \</span>
-<span class="code-line">           <span class="variable">self.center_x</span> > <span class="variable">self.right_bound</span>:</span>
-<span class="code-line">            <span class="variable">self.change_x</span> *= -<span class="number">1</span></span>
+<span class="code-line"><span class="variable">LEVELS</span> = [</span>
+<span class="code-line">    {</span>
+<span class="code-line">        <span class="string">"coins"</span>:   [(<span class="number">200</span>, <span class="number">150</span>), (<span class="number">400</span>, <span class="number">200</span>)],</span>
+<span class="code-line">        <span class="string">"enemies"</span>: [(<span class="number">300</span>, <span class="number">96</span>, <span class="number">250</span>, <span class="number">500</span>)],</span>
+<span class="code-line">        <span class="string">"goal"</span>:    (<span class="number">760</span>, <span class="number">128</span>),</span>
+<span class="code-line">    },</span>
+<span class="code-line">    {</span>
+<span class="code-line">        <span class="string">"coins"</span>:   [(<span class="number">150</span>, <span class="number">180</span>), (<span class="number">500</span>, <span class="number">260</span>)],</span>
+<span class="code-line">        <span class="string">"enemies"</span>: [(<span class="number">350</span>, <span class="number">96</span>, <span class="number">300</span>, <span class="number">600</span>),</span>
+<span class="code-line">                    (<span class="number">600</span>, <span class="number">96</span>, <span class="number">550</span>, <span class="number">760</span>)],</span>
+<span class="code-line">        <span class="string">"goal"</span>:    (<span class="number">880</span>, <span class="number">128</span>),</span>
+<span class="code-line">    },</span>
+<span class="code-line">]</span>
       </div>
-      <p><strong>No enemy image yet?</strong> Use <code>arcade.make_circle_texture(32, arcade.color.RED)</code> in place of the image path, or grab a free sprite from <a href="https://kenney.nl/assets" style="color: var(--accent-python);">kenney.nl</a>.</p>
+      <p><strong>Tip:</strong> Keep your platforms either in this data too, or in a shared ground layout &mdash; whichever you prefer. The important part is that coins, enemies, and the goal come from the level's data.</p>
     </div>
 
     <div class="info-box">
-      <h3>Step 2: Add Enemies &amp; Lives in setup()</h3>
-      <p>Create the enemy list, add a patrolling enemy or two, and give the player some lives:</p>
+      <h3>Step 2: Write setup_level()</h3>
+      <p>Replace the level-specific parts of your old <code>setup()</code> with a method that builds a level from its data &mdash; with <strong>fresh lists</strong> each time:</p>
+      <div class="code-block">
+<span class="code-line"><span class="keyword">def</span> <span class="function">setup_level</span>(<span class="variable">self</span>, <span class="variable">level_index</span>):</span>
+<span class="code-line">    <span class="variable">data</span> = <span class="variable">LEVELS</span>[<span class="variable">level_index</span>]</span>
+<span class="code-line">    </span>
+<span class="code-line">    <span class="variable">self.coin_list</span> = <span class="variable">arcade.SpriteList</span>()</span>
+<span class="code-line">    <span class="variable">self.enemy_list</span> = <span class="variable">arcade.SpriteList</span>()</span>
+<span class="code-line">    </span>
+<span class="code-line">    <span class="keyword">for</span> <span class="variable">x</span>, <span class="variable">y</span> <span class="keyword">in</span> <span class="variable">data</span>[<span class="string">"coins"</span>]:</span>
+<span class="code-line">        <span class="variable">self.coin_list.append</span>(<span class="variable">Coin</span>(<span class="variable">x</span>, <span class="variable">y</span>))</span>
+<span class="code-line">    <span class="keyword">for</span> <span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">left</span>, <span class="variable">right</span> <span class="keyword">in</span> <span class="variable">data</span>[<span class="string">"enemies"</span>]:</span>
+<span class="code-line">        <span class="variable">self.enemy_list.append</span>(<span class="variable">Enemy</span>(<span class="variable">x</span>, <span class="variable">y</span>, <span class="variable">left</span>, <span class="variable">right</span>))</span>
+<span class="code-line">    </span>
+<span class="code-line">    <span class="variable">gx</span>, <span class="variable">gy</span> = <span class="variable">data</span>[<span class="string">"goal"</span>]</span>
+<span class="code-line">    <span class="variable">self.goal</span> = <span class="variable">arcade.Sprite</span>(<span class="string">"assets/sprites/flag.png"</span>, <span class="number">0.5</span>)</span>
+<span class="code-line">    <span class="variable">self.goal.center_x</span> = <span class="variable">gx</span></span>
+<span class="code-line">    <span class="variable">self.goal.center_y</span> = <span class="variable">gy</span></span>
+<span class="code-line">    </span>
+<span class="code-line">    <span class="variable">self.player.center_x</span> = <span class="variable">START_X</span></span>
+<span class="code-line">    <span class="variable">self.player.center_y</span> = <span class="variable">START_Y</span></span>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3>Step 3: Track State &amp; Kick Off Level 1</h3>
+      <p>In <code>setup()</code>, create the player once, then load the first level:</p>
       <div class="code-block">
 <span class="code-line"><span class="keyword">def</span> <span class="function">setup</span>(<span class="variable">self</span>):</span>
+<span class="code-line">    <span class="comment"># Player, score, lives, platforms created here (once)</span></span>
 <span class="code-line">    <span class="comment"># ... existing setup code ...</span></span>
 <span class="code-line">    </span>
-<span class="code-line">    <span class="comment"># Lives &amp; game state</span></span>
-<span class="code-line">    <span class="variable">self.lives</span> = <span class="number">3</span></span>
-<span class="code-line">    <span class="variable">self.game_over</span> = <span class="keyword">False</span></span>
-<span class="code-line">    </span>
-<span class="code-line">    <span class="comment"># Enemy list</span></span>
-<span class="code-line">    <span class="variable">self.enemy_list</span> = <span class="variable">arcade.SpriteList</span>()</span>
-<span class="code-line">    <span class="variable">self.enemy_list.append</span>(</span>
-<span class="code-line">        <span class="variable">Enemy</span>(<span class="number">300</span>, <span class="number">96</span>, <span class="variable">left</span>=<span class="number">250</span>, <span class="variable">right</span>=<span class="number">500</span>)</span>
-<span class="code-line">    )</span>
-<span class="code-line">    <span class="variable">self.enemy_list.append</span>(</span>
-<span class="code-line">        <span class="variable">Enemy</span>(<span class="number">700</span>, <span class="number">96</span>, <span class="variable">left</span>=<span class="number">650</span>, <span class="variable">right</span>=<span class="number">850</span>)</span>
-<span class="code-line">    )</span>
+<span class="code-line">    <span class="variable">self.current_level</span> = <span class="number">0</span></span>
+<span class="code-line">    <span class="variable">self.game_won</span> = <span class="keyword">False</span></span>
+<span class="code-line">    <span class="variable">self.setup_level</span>(<span class="variable">self.current_level</span>)</span>
       </div>
     </div>
 
     <div class="info-box">
-      <h3>Step 3: Patrol &amp; Collisions in on_update()</h3>
-      <p>Update the enemies, then resolve collisions with the player:</p>
+      <h3>Step 4: Detect the Goal &amp; Advance</h3>
+      <p>In <code>on_update()</code>, after handling movement and enemies, check the goal:</p>
       <div class="code-block">
 <span class="code-line"><span class="keyword">def</span> <span class="function">on_update</span>(<span class="variable">self</span>, <span class="variable">delta_time</span>):</span>
-<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.game_over</span>:</span>
+<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.game_won</span>:</span>
 <span class="code-line">        <span class="keyword">return</span></span>
 <span class="code-line">    </span>
-<span class="code-line">    <span class="comment"># ... existing movement / physics / coins ...</span></span>
+<span class="code-line">    <span class="comment"># ... existing movement / coins / enemies ...</span></span>
 <span class="code-line">    </span>
-<span class="code-line">    <span class="variable">self.enemy_list.update</span>()</span>
-<span class="code-line">    </span>
-<span class="code-line">    <span class="variable">enemies_hit</span> = <span class="variable">arcade.check_for_collision_with_list</span>(</span>
-<span class="code-line">        <span class="variable">self.player</span>, <span class="variable">self.enemy_list</span></span>
-<span class="code-line">    )</span>
-<span class="code-line">    <span class="keyword">for</span> <span class="variable">enemy</span> <span class="keyword">in</span> <span class="variable">enemies_hit</span>:</span>
-<span class="code-line">        <span class="keyword">if</span> <span class="variable">self.player.change_y</span> < <span class="number">0</span> <span class="keyword">and</span> \</span>
-<span class="code-line">           <span class="variable">self.player.center_y</span> > <span class="variable">enemy.center_y</span>:</span>
-<span class="code-line">            <span class="variable">enemy.remove_from_sprite_lists</span>()</span>
-<span class="code-line">            <span class="variable">self.player.change_y</span> = <span class="number">12</span></span>
-<span class="code-line">            <span class="variable">self.score</span> += <span class="number">10</span></span>
-<span class="code-line">        <span class="keyword">else</span>:</span>
-<span class="code-line">            <span class="variable">self.hurt_player</span>()</span>
-      </div>
-    </div>
-
-    <div class="info-box">
-      <h3>Step 4: The hurt_player() Helper</h3>
-      <p>Add a method to the <code>Game</code> class that handles taking damage:</p>
-      <div class="code-block">
-<span class="code-line"><span class="keyword">def</span> <span class="function">hurt_player</span>(<span class="variable">self</span>):</span>
-<span class="code-line">    <span class="variable">self.lives</span> -= <span class="number">1</span></span>
-<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.lives</span> <= <span class="number">0</span>:</span>
-<span class="code-line">        <span class="variable">self.game_over</span> = <span class="keyword">True</span></span>
+<span class="code-line">    <span class="keyword">if</span> <span class="variable">arcade.check_for_collision</span>(<span class="variable">self.player</span>, <span class="variable">self.goal</span>):</span>
+<span class="code-line">        <span class="variable">self.advance_level</span>()</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">def</span> <span class="function">advance_level</span>(<span class="variable">self</span>):</span>
+<span class="code-line">    <span class="variable">self.current_level</span> += <span class="number">1</span></span>
+<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.current_level</span> >= <span class="keyword">len</span>(<span class="variable">LEVELS</span>):</span>
+<span class="code-line">        <span class="variable">self.game_won</span> = <span class="keyword">True</span></span>
 <span class="code-line">    <span class="keyword">else</span>:</span>
-<span class="code-line">        <span class="variable">self.player.center_x</span> = <span class="number">64</span></span>
-<span class="code-line">        <span class="variable">self.player.center_y</span> = <span class="number">128</span></span>
-<span class="code-line">        <span class="variable">self.player.change_x</span> = <span class="number">0</span></span>
-<span class="code-line">        <span class="variable">self.player.change_y</span> = <span class="number">0</span></span>
+<span class="code-line">        <span class="variable">self.setup_level</span>(<span class="variable">self.current_level</span>)</span>
       </div>
     </div>
 
     <div class="info-box">
-      <h3>Step 5: Draw Enemies, Lives &amp; Game Over</h3>
-      <p>Draw enemies with the main camera, then lives and any game-over text with the UI camera:</p>
+      <h3>Step 5: Draw the Goal, Level Number &amp; Win Screen</h3>
+      <p>Draw the goal with the main camera, and the level number plus any win message with the UI camera:</p>
       <div class="code-block">
 <span class="code-line"><span class="keyword">def</span> <span class="function">on_draw</span>(<span class="variable">self</span>):</span>
 <span class="code-line">    <span class="variable">self.clear</span>()</span>
@@ -1251,19 +1244,19 @@ body::before {
 <span class="code-line">    <span class="variable">self.platform_list.draw</span>()</span>
 <span class="code-line">    <span class="variable">self.coin_list.draw</span>()</span>
 <span class="code-line">    <span class="variable">self.enemy_list.draw</span>()</span>
+<span class="code-line">    <span class="variable">arcade.draw_sprite</span>(<span class="variable">self.goal</span>)</span>
 <span class="code-line">    <span class="variable">self.player_list.draw</span>()</span>
 <span class="code-line">    </span>
 <span class="code-line">    <span class="variable">self.ui_camera.use</span>()</span>
 <span class="code-line">    <span class="variable">arcade.draw_text</span>(</span>
-<span class="code-line">        <span class="string">f"Score: {self.score}   Lives: {self.lives}"</span>,</span>
+<span class="code-line">        <span class="string">f"Level {self.current_level + 1}   Score: {self.score}"</span>,</span>
 <span class="code-line">        <span class="number">10</span>, <span class="variable">self.height</span> - <span class="number">30</span>,</span>
 <span class="code-line">        <span class="variable">arcade.color.WHITE</span>, <span class="number">18</span></span>
 <span class="code-line">    )</span>
-<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.game_over</span>:</span>
+<span class="code-line">    <span class="keyword">if</span> <span class="variable">self.game_won</span>:</span>
 <span class="code-line">        <span class="variable">arcade.draw_text</span>(</span>
-<span class="code-line">            <span class="string">"GAME OVER"</span>, <span class="variable">self.width</span> / <span class="number">2</span>, <span class="variable">self.height</span> / <span class="number">2</span>,</span>
-<span class="code-line">            <span class="variable">arcade.color.RED</span>, <span class="number">48</span>,</span>
-<span class="code-line">            <span class="variable">anchor_x</span>=<span class="string">"center"</span></span>
+<span class="code-line">            <span class="string">"YOU WIN!"</span>, <span class="variable">self.width</span> / <span class="number">2</span>, <span class="variable">self.height</span> / <span class="number">2</span>,</span>
+<span class="code-line">            <span class="variable">arcade.color.GREEN</span>, <span class="number">48</span>, <span class="variable">anchor_x</span>=<span class="string">"center"</span></span>
 <span class="code-line">        )</span>
       </div>
     </div>
@@ -1273,39 +1266,39 @@ body::before {
       <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 12px;"><strong>Verify your implementation:</strong></p>
       <div class="checklist-item">
         <input type="checkbox" id="check-1">
-        <label for="check-1"><strong>Enemy appears:</strong> An enemy is visible on a platform or the ground</label>
+        <label for="check-1"><strong>Goal visible:</strong> A flag appears at the end of the level</label>
       </div>
       <div class="checklist-item">
         <input type="checkbox" id="check-2">
-        <label for="check-2"><strong>Patrol works:</strong> The enemy walks back and forth and reverses at its boundaries</label>
+        <label for="check-2"><strong>Win detected:</strong> Touching the flag triggers a level change</label>
       </div>
       <div class="checklist-item">
         <input type="checkbox" id="check-3">
-        <label for="check-3"><strong>Stomp defeats:</strong> Jumping onto an enemy from above removes it and bounces the player</label>
+        <label for="check-3"><strong>Level 2 loads:</strong> The second level has a different layout from the first</label>
       </div>
       <div class="checklist-item">
         <input type="checkbox" id="check-4">
-        <label for="check-4"><strong>Side contact hurts:</strong> Touching an enemy from the side costs a life and respawns the player</label>
+        <label for="check-4"><strong>No leftovers:</strong> Level 2 does not show level 1's coins or enemies</label>
       </div>
       <div class="checklist-item">
         <input type="checkbox" id="check-5">
-        <label for="check-5"><strong>Lives display:</strong> The number of lives is shown on screen and decreases when hurt</label>
+        <label for="check-5"><strong>Level number shows:</strong> The HUD displays the current level</label>
       </div>
       <div class="checklist-item">
         <input type="checkbox" id="check-6">
-        <label for="check-6"><strong>Game over:</strong> When lives reach 0, a &ldquo;GAME OVER&rdquo; message appears and the player stops</label>
+        <label for="check-6"><strong>Win screen:</strong> Beating the last level shows a &ldquo;YOU WIN!&rdquo; message</label>
       </div>
     </div>
 
     <div class="warning-box">
       <span class="warn-icon">&#9888;&#65039;</span>
-      <p><strong>Stuck on the stomp feeling unfair?</strong> Tune the numbers: a larger bounce (<code>change_y = 14</code>) feels snappier, and placing enemies a little below platform edges gives the player room to land. Test by jumping straight down onto an enemy versus walking into it.</p>
+      <p><strong>Want to design levels faster?</strong> Because levels are just data, you can tweak coin and enemy positions without touching any logic. Try adding a third entry to <code>LEVELS</code> &mdash; if your <code>setup_level()</code> is written well, it should work with zero code changes.</p>
     </div>
 
     <div class="info-box">
-      <h3>&#128640; Ready for Part 8?</h3>
-      <p>Once your enemies patrol, can be stomped, and cost lives, you're ready for <strong>Part 8: Levels &amp; Goals</strong>, where we'll add a goal flag, win conditions, and multiple levels to beat!</p>
-      <p style="margin-top: 10px;"><a href="part8-levels-goals.html" class="btn" style="color: var(--accent-python); border: 1px solid var(--accent-python); background: transparent; padding: 8px 16px; border-radius: 6px;">Go to Part 8 &rarr;</a></p>
+      <h3>&#128640; Ready for Part 9?</h3>
+      <p>Once you can reach a goal and progress through multiple levels, you're ready for <strong>Part 9: Polish</strong> &mdash; sound, animations, menus, and the finishing touches that make your game feel complete!</p>
+      <p style="margin-top: 10px;"><span class="btn" style="color: var(--text-dim); border: 1px solid var(--border); background: transparent; padding: 8px 16px; border-radius: 6px; cursor: default;">Part 9 &mdash; coming soon</span></p>
     </div>
 
   </section>
@@ -1457,7 +1450,7 @@ function showResults(py) {
   if (pct >= 70) launchConfetti();
 
   try {
-    const key = `python-part7-enemies-v1`;
+    const key = `python-part8-levels-goals-v1`;
     localStorage.setItem(key, JSON.stringify({
       score: py,
       max: state.maxMarks.py,
@@ -1530,77 +1523,84 @@ window.addEventListener('load', () => {
   });
 });
 
-// ── Interactive Enemy Patrol Demo ──────────────────────────
+// ── Interactive Level / Goal Demo ──────────────────────────
 (function() {
-  const canvas = document.getElementById('enemy-demo-canvas');
+  const canvas = document.getElementById('level-demo-canvas');
   const ctx = canvas.getContext('2d');
-  const statusEl = document.getElementById('enemy-demo-status');
+  const statusEl = document.getElementById('level-demo-status');
 
   const W = 600, H = 300;
   const GROUND_Y = H - 40;
 
-  const platforms = [
-    { x: 0, y: GROUND_Y, w: W, h: 40 },
-    { x: 220, y: 200, w: 140, h: 16 },
-    { x: 430, y: 150, w: 130, h: 16 },
+  // Each level is data: platforms, a goal, and a start position.
+  const LEVELS = [
+    {
+      platforms: [
+        { x: 0, y: GROUND_Y, w: W, h: 40 },
+        { x: 150, y: 210, w: 110, h: 16 },
+        { x: 340, y: 160, w: 120, h: 16 },
+      ],
+      goal: { x: 540, y: GROUND_Y - 46 },
+      start: { x: 30, y: GROUND_Y - 38 },
+    },
+    {
+      platforms: [
+        { x: 0, y: GROUND_Y, w: W, h: 40 },
+        { x: 90, y: 170, w: 110, h: 16 },
+        { x: 270, y: 210, w: 110, h: 16 },
+        { x: 440, y: 150, w: 120, h: 16 },
+      ],
+      goal: { x: 500, y: 150 - 46 },
+      start: { x: 30, y: GROUND_Y - 38 },
+    },
   ];
 
-  const player = { x: 40, y: GROUND_Y - 40, w: 26, h: 38, vx: 0, vy: 0, onGround: true };
+  const player = { x: 30, y: GROUND_Y - 38, w: 26, h: 38, vx: 0, vy: 0, onGround: true };
   const GRAVITY = 0.45;
   const JUMP_VEL = -9;
   const SPEED = 3;
-  const START_X = 40, START_Y = GROUND_Y - 38;
 
-  let enemies = [];
-  let lives = 3;
-  let defeated = 0;
-  let sparkles = [];
-  let hurtFlash = 0;
-  let gameOver = false;
-  let won = false;
+  let platforms = [];
+  let goal = { x: 0, y: 0, w: 28, h: 46 };
+  let currentLevel = 0;
+  let gameWon = false;
+  let banner = 0;        // frames to show "Level Complete!"
   const keys = {};
 
-  function resetGame() {
-    lives = 3;
-    defeated = 0;
-    gameOver = false;
-    won = false;
-    sparkles = [];
-    hurtFlash = 0;
-    enemies = [
-      { x: 300, y: GROUND_Y - 16, w: 30, h: 28, dir: 1, left: 200, right: 540, alive: true },
-      { x: 290, y: 200 - 28, w: 30, h: 28, dir: -1, left: 230, right: 350, alive: true, plat: 1 },
-      { x: 490, y: 150 - 28, w: 30, h: 28, dir: 1, left: 440, right: 550, alive: true, plat: 2 },
-    ];
-    respawnPlayer();
-  }
-
-  function respawnPlayer() {
-    player.x = START_X;
-    player.y = START_Y;
+  // setup_level: build the level from its data (fresh each time)
+  function setupLevel(index) {
+    const data = LEVELS[index];
+    platforms = data.platforms.map(p => ({ ...p }));
+    goal = { x: data.goal.x, y: data.goal.y, w: 28, h: 46 };
+    player.x = data.start.x;
+    player.y = data.start.y;
     player.vx = 0;
     player.vy = 0;
     player.onGround = true;
   }
 
-  resetGame();
+  function resetGame() {
+    currentLevel = 0;
+    gameWon = false;
+    banner = 0;
+    setupLevel(currentLevel);
+  }
 
-  function addSparkle(x, y, color) {
-    for (let i = 0; i < 10; i++) {
-      sparkles.push({
-        x: x, y: y,
-        vx: (Math.random() - 0.5) * 5,
-        vy: (Math.random() - 0.5) * 5,
-        life: 22 + Math.random() * 10,
-        color: color || (Math.random() > 0.5 ? '#e05252' : '#f5a623')
-      });
+  function advanceLevel() {
+    currentLevel += 1;
+    if (currentLevel >= LEVELS.length) {
+      gameWon = true;
+    } else {
+      banner = 70;
+      setupLevel(currentLevel);
     }
   }
 
-  const ENEMY_SPEED = 1.4;
+  resetGame();
 
   function update() {
-    if (gameOver || won) return;
+    if (gameWon) return;
+    if (banner > 0) banner--;
 
     if (keys['ArrowLeft'] || keys['a']) player.vx = -SPEED;
     else if (keys['ArrowRight'] || keys['d']) player.vx = SPEED;
@@ -1630,64 +1630,35 @@ window.addEventListener('load', () => {
     // Screen bounds
     if (player.x < 0) player.x = 0;
     if (player.x + player.w > W) player.x = W - player.w;
-    if (player.y > H) { hurt(); }
+    if (player.y > H) { player.x = LEVELS[currentLevel].start.x; player.y = LEVELS[currentLevel].start.y; player.vy = 0; }
 
-    // Enemy patrol
-    for (const e of enemies) {
-      if (!e.alive) continue;
-      e.x += ENEMY_SPEED * e.dir;
-      if (e.x < e.left) { e.x = e.left; e.dir *= -1; }
-      else if (e.x + e.w > e.right) { e.x = e.right - e.w; e.dir *= -1; }
-    }
-
-    // Player-enemy collisions
-    for (const e of enemies) {
-      if (!e.alive) continue;
-      const overlap = player.x + player.w > e.x && player.x < e.x + e.w &&
-                      player.y + player.h > e.y && player.y < e.y + e.h;
-      if (!overlap) continue;
-      const playerBottom = player.y + player.h;
-      // Stomp: falling and player's feet are near the enemy's top
-      if (player.vy > 0 && playerBottom < e.y + e.h * 0.6) {
-        e.alive = false;
-        defeated++;
-        player.vy = JUMP_VEL * 0.7; // bounce
-        addSparkle(e.x + e.w / 2, e.y, '#3ecf8e');
-        if (defeated >= enemies.length) won = true;
-      } else {
-        hurt();
-      }
-    }
-
-    // Sparkles
-    for (let i = sparkles.length - 1; i >= 0; i--) {
-      const s = sparkles[i];
-      s.x += s.vx;
-      s.y += s.vy;
-      s.life--;
-      if (s.life <= 0) sparkles.splice(i, 1);
-    }
-
-    if (hurtFlash > 0) hurtFlash--;
+    // Goal collision -> advance
+    const reached = player.x + player.w > goal.x && player.x < goal.x + goal.w &&
+                    player.y + player.h > goal.y && player.y < goal.y + goal.h;
+    if (reached) advanceLevel();
 
     let status;
-    if (gameOver) status = `Lives: 0 — GAME OVER — Click to play again`;
-    else if (won) status = `All enemies defeated! — Click to play again`;
-    else status = `Lives: ${lives} — Enemies left: ${enemies.length - defeated} — Use arrow keys or click to move`;
+    if (gameWon) status = `You win! Cleared all ${LEVELS.length} levels — Click to play again`;
+    else if (banner > 0) status = `Level ${currentLevel + 1} of ${LEVELS.length} — Level complete! Keep going!`;
+    else status = `Level ${currentLevel + 1} of ${LEVELS.length} — Reach the flag! Use arrow keys or click to move`;
     statusEl.textContent = status;
   }
 
-  function hurt() {
-    if (gameOver || won) return;
-    lives--;
-    hurtFlash = 12;
-    addSparkle(player.x + player.w / 2, player.y + player.h / 2, '#e05252');
-    if (lives <= 0) {
-      lives = 0;
-      gameOver = true;
-    } else {
-      respawnPlayer();
-    }
+  function drawFlag(g) {
+    // Pole
+    ctx.fillStyle = '#c9d2e6';
+    ctx.fillRect(g.x + g.w / 2 - 2, g.y, 4, g.h);
+    // Flag triangle
+    ctx.beginPath();
+    ctx.moveTo(g.x + g.w / 2 + 2, g.y + 4);
+    ctx.lineTo(g.x + g.w / 2 + 22, g.y + 12);
+    ctx.lineTo(g.x + g.w / 2 + 2, g.y + 20);
+    ctx.closePath();
+    ctx.fillStyle = '#3ecf8e';
+    ctx.fill();
+    // Base
+    ctx.fillStyle = '#2a3050';
+    ctx.fillRect(g.x + g.w / 2 - 6, g.y + g.h - 4, 12, 4);
   }
 
   function draw() {
@@ -1704,32 +1675,11 @@ window.addEventListener('load', () => {
       ctx.strokeRect(p.x, p.y, p.w, p.h);
     }
 
-    // Enemies
-    for (const e of enemies) {
-      if (!e.alive) continue;
-      ctx.fillStyle = '#e05252';
-      ctx.fillRect(e.x, e.y, e.w, e.h);
-      ctx.strokeStyle = '#ff7b7b';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(e.x, e.y, e.w, e.h);
-      // Eyes (look in travel direction)
-      ctx.fillStyle = '#fff';
-      const eyeX = e.dir > 0 ? e.x + e.w - 11 : e.x + 5;
-      ctx.fillRect(eyeX, e.y + 7, 6, 6);
-      ctx.fillStyle = '#000';
-      ctx.fillRect(eyeX + (e.dir > 0 ? 2 : 0), e.y + 9, 3, 3);
-    }
-
-    // Sparkles
-    for (const s of sparkles) {
-      ctx.fillStyle = s.color;
-      ctx.globalAlpha = Math.max(0, s.life / 30);
-      ctx.fillRect(s.x - 2, s.y - 2, 4, 4);
-      ctx.globalAlpha = 1;
-    }
+    // Goal flag
+    if (!gameWon) drawFlag(goal);
 
     // Player
-    ctx.fillStyle = hurtFlash > 0 && hurtFlash % 4 < 2 ? '#e05252' : 'rgba(55,118,171,0.9)';
+    ctx.fillStyle = 'rgba(55,118,171,0.9)';
     ctx.fillRect(player.x, player.y, player.w, player.h);
     ctx.strokeStyle = '#4f8ef7';
     ctx.lineWidth = 2;
@@ -1739,21 +1689,20 @@ window.addEventListener('load', () => {
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 14px "DM Mono", monospace';
     ctx.textAlign = 'left';
-    ctx.fillText(`Lives: ${lives}`, 10, 22);
+    ctx.fillText(`Level ${Math.min(currentLevel + 1, LEVELS.length)}`, 10, 22);
 
-    if (gameOver) {
-      ctx.fillStyle = '#e05252';
+    if (banner > 0 && !gameWon) {
+      ctx.fillStyle = '#3ecf8e';
+      ctx.font = 'bold 22px "Fraunces", serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Level complete!', W / 2, 40);
+    }
+
+    if (gameWon) {
+      ctx.fillStyle = '#3ecf8e';
       ctx.font = 'bold 30px "Fraunces", serif';
       ctx.textAlign = 'center';
-      ctx.fillText('GAME OVER', W / 2, H / 2 - 6);
-      ctx.font = '13px "DM Mono", monospace';
-      ctx.fillStyle = '#7a84a0';
-      ctx.fillText('Click to play again', W / 2, H / 2 + 22);
-    } else if (won) {
-      ctx.fillStyle = '#3ecf8e';
-      ctx.font = 'bold 26px "Fraunces", serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Area cleared!', W / 2, H / 2 - 6);
+      ctx.fillText('YOU WIN!', W / 2, H / 2 - 6);
       ctx.font = '13px "DM Mono", monospace';
       ctx.fillStyle = '#7a84a0';
       ctx.fillText('Click to play again', W / 2, H / 2 + 22);
@@ -1774,9 +1723,8 @@ window.addEventListener('load', () => {
   });
   document.addEventListener('keyup', e => { keys[e.key] = false; });
 
-  // Click/tap to move toward click position, or reset when over
   function handlePointer(cx, cy) {
-    if (gameOver || won) { resetGame(); return; }
+    if (gameWon) { resetGame(); return; }
     if (cx < player.x + player.w / 2) { keys['ArrowLeft'] = true; keys['ArrowRight'] = false; }
     else { keys['ArrowRight'] = true; keys['ArrowLeft'] = false; }
     if (cy < player.y && player.onGround) keys['ArrowUp'] = true;
