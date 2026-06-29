@@ -797,9 +797,18 @@ body::before {
 
     <div class="info-box">
       <h3>Installation</h3>
-      <p>Open Terminal on your Mac and run:</p>
-      <p><code>pip3 install arcade</code></p>
-      <p>This installs the Arcade library. You only need to do this once.</p>
+      <p>On macOS you need to use a <strong>virtual environment</strong> because the system Python is managed by Homebrew. Run these commands once in Terminal:</p>
+      <div class="code-block">
+<span class="code-line"><span class="comment"># 1. Create a virtual environment in your project folder</span></span>
+<span class="code-line"><span class="variable">python3</span> -m venv <span class="string">venv</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment"># 2. Activate it (do this every time you open a new Terminal)</span></span>
+<span class="code-line"><span class="variable">source</span> venv/bin/activate</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment"># 3. Install Arcade inside the virtual environment</span></span>
+<span class="code-line"><span class="variable">pip</span> install arcade</span>
+      </div>
+      <p>Your prompt will show <code>(venv)</code> when the environment is active. You only install once, but you must run <code>source venv/bin/activate</code> each time you open a new Terminal tab before running your game.</p>
       <p><strong>Verify it worked:</strong> Run <code>python3 -c "import arcade; print('Arcade is ready!')"</code></p>
     </div>
 
@@ -921,7 +930,7 @@ body::before {
       </div>
       <div class="q-footer">
         <button class="btn btn-check" onclick="checkMCQ('q1','b','Q1')">Check Answer</button>
-        <button class="btn btn-hint" onclick="showHint('q1','Check the Installation section above - it uses pip3')">Hint</button>
+        <button class="btn btn-hint" onclick="showHint('q1','Check the Installation section above - inside a virtual environment you use pip install')">Hint</button>
       </div>
       <div class="feedback" id="q1-fb"></div>
     </div>
@@ -1223,7 +1232,8 @@ body::before {
     <div class="info-box">
       <h3>Troubleshooting</h3>
       <ul>
-        <li><strong>ModuleNotFoundError:</strong> You forgot to run <code>pip3 install arcade</code></li>
+        <li><strong>ModuleNotFoundError:</strong> Your virtual environment isn't active — run <code>source venv/bin/activate</code> first, then try again</li>
+        <li><strong>externally-managed-environment error:</strong> You tried <code>pip3 install</code> outside a venv — see the Installation section above</li>
         <li><strong>Command not found:</strong> Make sure you're using <code>python3</code> not <code>python</code></li>
         <li><strong>Window closes immediately:</strong> You might have forgotten <code>arcade.run()</code></li>
         <li><strong>Syntax error:</strong> Check for typos in the code</li>
